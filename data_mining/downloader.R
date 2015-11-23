@@ -14,7 +14,7 @@ for( iPart in 1:length(partitions[,1]) ) {
   partMSG = sprintf("Partition %s-%s",substr(partitions[iPart,1],1,4),substr(partitions[iPart,2],1,4));
   print(partMSG)
   #iPart = 1;
-  sector_dir <- paste0("data/time_series/", substr(partitions[iPart,1],1,4),"-",substr(partitions[iPart,2],1,4));
+  sector_dir <- paste0("time_series/", substr(partitions[iPart,1],1,4),"-",substr(partitions[iPart,2],1,4));
   dir.create(sector_dir);
   for(sector in sector_html_titles) {
     #sector = sector_html_titles[1];

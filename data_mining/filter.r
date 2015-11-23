@@ -4,11 +4,11 @@ library(dplyr)
 library(timeSeries)
 library(zoo)
 
-getDateVector <- function(d1,d2,format="%Y%m%d"){
-dates <-seq.Date(to = as.Date(d2,format=format),
-                 from = as.Date(d1,format=format),
-                 by = 1)
-return(dates[!is.weekend(dates)])
+getDateVector <- function(d1,d2,format="%Y%m%d") {
+  dates <-seq.Date(to = as.Date(d2,format=format),
+                   from = as.Date(d1,format=format),
+                   by = 1)
+  return(as.Date(dates[!is.weekend(dates)]))
 }
 
 # get titles
@@ -29,11 +29,7 @@ for (sector in sector_html_titles[1])
     for(part in 1:length(partitions_year[,1]))
     {
       # create general date vector
-      date_vector <- as.data.frame(getDateVector(partitions_year[part,1],partitions_year[part,2]))
-      colnames(date_vector) <- c("Index")
-      date_vector$Index <- as.Date(date_vector$Index)
-      
-      merged_data <- date_vector
+      merged_data <- data.frame(Index=getDateVector(partitions_year[part,1],partitions_year[part,2]))
       
       year <- substr(partitions_year[part,1],1,4)
       
