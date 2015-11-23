@@ -4,6 +4,7 @@ library(dplyr)
 library(timeSeries)
 library(zoo)
 
+startTime = Sys.time();
 #set home directory if needed
 #setwd("F:/Mean-Value-Opt/data_mining")
 
@@ -30,8 +31,8 @@ sector = sector_html_titles[1];
   stock_list <- gsub(".csv","",dir(stock_dir))
   dir.create("filtered_stocks/",showWarnings = FALSE)
 
-    #for(part in 1:length(partitions_year[,1]))
-    part = 1
+    for(part in 1:length(partitions_year[,1]))
+    #part = 1
     {
       # create general date vector
       merged_data <- data.frame(Index=getDateVector(partitions_year[part,1],partitions_year[part,2]))
@@ -76,9 +77,10 @@ sector = sector_html_titles[1];
           }
           
         }
-        print(paste0(round(which(stock_list == stock)/length(stock_list)*100,2),'% Done'));
+        print(paste0(round(which(stock_list == stock)/length(stock_list)*100,2),'% Done, [', ncol(merged_data),'/',length(stock_list),'] year: ', year ));
         write.csv(merged_data,file = merged_data_file,row.names = FALSE)
       }
       
     }
 }
+total_time = Sys.time() - startTime;
