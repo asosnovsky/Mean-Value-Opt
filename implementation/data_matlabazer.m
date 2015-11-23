@@ -39,7 +39,7 @@ tic
 %for(sector=sectors)
 sector = sectors(1);
 %for(date=dates)
-date = dates(1);
+date = dates(2);
 folders.tmp = strcat(folders.data, date, '/',sector,'.csv');
 fulldataset = importdata(char(folders.tmp));
 anData.stockNames = regexprep(strrep(fulldataset.textdata(1,:),'Close.',''),'["|.]','');
@@ -48,6 +48,7 @@ anData.data(anData.data == 0) = 1E-20;% add a rounding error to avoid infinites
 anData.returns = (anData.data(2:end,:)-anData.data(1:end-1,:))./anData.data(1:end-1,:);
 anData.Ret = mean(anData.returns);
 anData.CoRisk = cov(anData.returns);
+%%
 
 [sharpe, P, Wp, sharpes, mps, risks] = optimizeSharpPort( anData.Ret, anData.CoRisk, RiskFreeRate, PortfolioLimit, false );
 toc
