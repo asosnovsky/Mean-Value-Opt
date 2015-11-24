@@ -24,7 +24,7 @@ partitions_year = rbind(c("20080101","20081231"),
                         c("20110101","20111231"),
                         c("20120101","20121231"))
 
-#for (sector in sector_html_titles)
+for (sector in sector_html_titles)
 sector = sector_html_titles[1];
 {
   stock_dir <- paste0("time_series/2008-2012/",sector)
@@ -77,7 +77,7 @@ sector = sector_html_titles[1];
           }
           
         }
-        print(paste0(round(which(stock_list == stock)/length(stock_list)*100,2),'% Done, [', ncol(merged_data),'/',length(stock_list),'] year: ', year ));
+        print(paste0(round(which(stock_list == stock)/length(stock_list)*100,2),'% Done, [', ncol(merged_data),'/',length(stock_list),'] year: ', year, ' sector: ', sector ));
         write.csv(merged_data,file = merged_data_file,row.names = FALSE)
       }
       

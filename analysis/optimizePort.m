@@ -1,4 +1,4 @@
-function [ P , Wp, lRisk, cRisk, sRisk ] = optimizePort( Ret, CoRisk, mp, portlim, P, Wp  )
+function [ P , Wp, lRisk, cRisk, sRisk ] = optimizePort( Ret, CoRisk, mp, portlim, P, Wp, posWps  )
 %optimizePort Optimize a portfolio based on a list of expected returns and
 %the covariance matrix. Using the MVP method
 %  [ P , Wp ] = optimizePort( Ret, CoRisk, mp, portlim, P, Wp  )
@@ -51,16 +51,37 @@ switch nargin
         [~,P] = min(Risk);
 
         % Build the first portfolio
-        Wp = [1];
+        Wp = ones(length(P),1)./length(P);
+        
+        % Quadprog Settings
+        Wlow = @(n) -ones(n,1);
     case 5
         if isempty(P)
             [~,P] = min(Risk);
         end
         Wp = ones(length(P),1)./length(P);
+        % Quadprog Settings
+        Wlow = @(n) -ones(n,1);
     case 6
-        if isempty(P)
+        if isempty(P) || isempty(Wp)
             [~,P] = min(Risk);
-            Wp = [1];
+            Wp = ones(length(P),1)./length(P);
+        end
+        if size(Wp,1) == 1
+            Wp = Wp';
+        end
+        % Quadprog Settings
+        Wlow = @(n) -ones(n,1);
+    case 7
+        % Quadprog Settings
+        if(posWps)
+            Wlow = @(n) zeros(n,1);
+        else
+            Wlow = @(n) -ones(n,1);
+        end
+        if isempty(P) || isempty(Wp)
+            [~,P] = min(Risk);
+            Wp = ones(length(P),1)./length(P);
         end
         if size(Wp,1) == 1
             Wp = Wp';
@@ -81,11 +102,12 @@ end
 RetP = @(p,w) Ret(p)*w;
 RisP = @(p,w) w'*CoRisk(p,p)*w;
 sRisk = [RisP(P,Wp)];
+
 function OUTPUT()
-    %disp('---------------------------------');
-    %fprintf('The Current Portfolio consists of the following Assets:\n\n');
-    %fprintf('> Asset %3.0f: w=%1.4f, E[X%G]=%1.4f, Var[X%G]=%1.4f\n',[P ; Wp'; P; Ret(P); P; Risk(P)']);
-    %fprintf('\n> E[P] = %1.4f, Var[P] = %1.4f\n', [RetP(P,Wp) RisP(P,Wp)]);
+    disp('---------------------------------');
+    fprintf('The Current Portfolio consists of the following Assets:\n\n');
+    fprintf('> Asset %3.0f: w=%1.4f, E[X%G]=%1.4f, Var[X%G]=%1.4f\n',[P ; Wp'; P; Ret(P); P; Risk(P)']);
+    fprintf('\n> E[P] = %1.4f, Var[P] = %1.4f\n', [RetP(P,Wp) RisP(P,Wp)]);
 end
 function addPort()
     for repNum = 1:portlim-length(P)
@@ -106,7 +128,7 @@ function addPort()
                 n = length(M);
                 % Optimize weights
                 w = quadprog(2.*S,[],[],[],[ M ; ones(1,n)],[mp;1],...
-                    -ones(n,1),ones(n,1),...
+                    Wlow(n),ones(n,1),...
                     [],optimoptions('quadprog','Algorithm','interior-point-convex','Display','off'));
                 % Determine if Portfolio is optimal
                 if RisP([P portID],w) < temp
@@ -121,7 +143,7 @@ function addPort()
         P = [P fID];
         Wp = fW;
     end
-    %OUTPUT();
+    OUTPUT();
 end
 function redPort()
     temp = Inf;
@@ -140,7 +162,7 @@ function redPort()
 
                 % Optimize weights
                 w = quadprog(2.*S,[],[],[],[ M ; ones(1,n)],[mp;1],...
-                    -ones(n,1),ones(n,1),...
+                    Wlow(n),ones(n,1),...
                     [],optimoptions('quadprog','Algorithm','interior-point-convex','Display','off'));
                 % Determine if Portfolio is optimal
                 if RisP(redList,w) < temp
@@ -154,7 +176,7 @@ function redPort()
     % Set a new Portfolio as our current
     P   = fIDs;
     Wp  = fW;
-    %OUTPUT();
+    OUTPUT();
 end
 
 addPort();
@@ -175,7 +197,6 @@ while abs(lRisk-cRisk) > 1E-20
     cRisk = RisP(P,Wp);
     OUTPUT();
 end
-
     if(mpmod)
         warning('Using a modified mp, as the orginal one, was outside the bounds of the min/max of Returns');
     end

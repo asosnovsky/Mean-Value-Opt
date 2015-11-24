@@ -35,6 +35,7 @@ PortfolioLimit = 10;
 data.Ps = zeros(length(dates),PortfolioLimit);
 data.Wps = zeros(length(dates),PortfolioLimit);
 %% % (2) Get Data and Analyze it
+clc
 tic
 %for(sector=sectors)
 sector = sectors(1);
@@ -48,9 +49,9 @@ anData.data(anData.data == 0) = 1E-20;% add a rounding error to avoid infinites
 anData.returns = (anData.data(2:end,:)-anData.data(1:end-1,:))./anData.data(1:end-1,:);
 anData.Ret = mean(anData.returns);
 anData.CoRisk = cov(anData.returns);
-%%
+%
 
-[sharpe, P, Wp, sharpes, mps, risks] = optimizeSharpPort( anData.Ret, anData.CoRisk, RiskFreeRate, PortfolioLimit, false );
+[sharpe, P, Wp, sharpes, mps, risks] = optimizeSharpPort( anData.Ret(1:10), anData.CoRisk(1:10,1:10), RiskFreeRate, PortfolioLimit );
 toc
 
 data.(strrep(sectors{1},' ','_')).(strcat('y',char(date))) = anData;
