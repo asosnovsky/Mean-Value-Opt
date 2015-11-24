@@ -1,6 +1,5 @@
 clear
 clc
-
 h = animatedline;
 MarketAssets = [ random('gam',200,2,1,ceil(random('unif',0,10,1,1)))...
                random('gam',2,4,1,ceil(random('unif',0,10,1,1)))...
