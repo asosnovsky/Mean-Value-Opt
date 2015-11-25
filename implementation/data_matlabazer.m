@@ -36,34 +36,33 @@ data.Ps = zeros(length(dates),PortfolioLimit);
 data.Wps = zeros(length(dates),PortfolioLimit);
 %% % (2) Get Data and Analyze it
 clc
-tic
+
 %for(sector=sectors)
-sector = sectors(1);
-%for(date=dates)
-date = dates(2);
-folders.tmp = strcat(folders.data, date, '/',sector,'.csv');
-fulldataset = importdata(char(folders.tmp));
-anData.stockNames = regexprep(strrep(fulldataset.textdata(1,:),'Close.',''),'["|.]','');
-anData.data = fulldataset.data;
-anData.data(anData.data == 0) = 1E-20;% add a rounding error to avoid infinites
-anData.returns = (anData.data(2:end,:)-anData.data(1:end-1,:))./anData.data(1:end-1,:);
-anData.Ret = mean(anData.returns);
-anData.CoRisk = cov(anData.returns);
-%
-
-[sharpe, P, Wp, sharpes, mps, risks] = optimizeSharpPort( anData.Ret(1:10), anData.CoRisk(1:10,1:10), RiskFreeRate, PortfolioLimit );
+sector = sectors(2);
+for(date=dates)
+%date = dates(1);
+tic
+    folders.tmp = strcat(folders.data, date, '/',sector,'.csv');
+    fulldataset = importdata(char(folders.tmp));
+    anData.stockNames = regexprep(strrep(fulldataset.textdata(1,:),'Close.',''),'["|.]','');
+    anData.data = fulldataset.data;
+    anData.data(anData.data == 0) = 1E-20;% add a rounding error to avoid infinites
+    anData.returns = (anData.data(2:end,:)-anData.data(1:end-1,:))./anData.data(1:end-1,:);
+    anData.Ret = mean(anData.returns);
+    anData.CoRisk = cov(anData.returns);
+    [sharpe, P, Wp, sharpes, mps, risks] = optimizeSharpPort( anData.Ret, anData.CoRisk, RiskFreeRate, PortfolioLimit );
+    data.(strrep(sectors{1},' ','_')).(strcat('y',char(date))) = anData;
+    data.Ps(1,:) = P;
+    data.Wps(1,:) = Wp;
 toc
-
-data.(strrep(sectors{1},' ','_')).(strcat('y',char(date))) = anData;
-data.Ps(1,:) = P;
-data.Wps(1,:) = Wp;
-toc
-
-% Ploting
+end
+%% Ploting
 
 tmp = anData.data(:,P)*Wp;
 sel = anData.data(:,P);
 
 plot(tmp);
+
+%%
 hold on
 plot(sel)
