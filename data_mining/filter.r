@@ -1,12 +1,12 @@
 rm(list=ls())
-library(chron) #used for creating date vector
-library(dplyr)
-library(timeSeries)
-library(zoo)
+require(chron) #used for creating date vector
+require(dplyr)
+require(timeSeries)
+require(zoo)
 
 startTime = Sys.time();
 #set home directory if needed
-#setwd("F:/Mean-Value-Opt/data_mining")
+#setwd("~/Github/Mean-Value-Opt/data_mining")
 
 getDateVector <- function(d1,d2,format="%Y%m%d") {
   dates <-seq.Date(to = as.Date(d2,format=format),
@@ -24,10 +24,10 @@ partitions_year = rbind(c("20080101","20081231"),
                         c("20110101","20111231"),
                         c("20120101","20121231"))
 
-for (sector in sector_html_titles)
-sector = sector_html_titles[1];
+for (sect in 6:length(sector_html_titles))
 {
-  stock_dir <- paste0("time_series/2008-2012/",sector)
+  sector = sector_html_titles[sect];
+  stock_dir <- paste0("/run/media/ari/data-600-ntfs/data/data/time_series/2008-2012/",sector)
   stock_list <- gsub(".csv","",dir(stock_dir))
   dir.create("filtered_stocks/",showWarnings = FALSE)
 
@@ -78,9 +78,9 @@ sector = sector_html_titles[1];
           
         }
         print(paste0(round(which(stock_list == stock)/length(stock_list)*100,2),'% Done, [', ncol(merged_data),'/',length(stock_list),'] year: ', year, ' sector: ', sector ));
-        write.csv(merged_data,file = merged_data_file,row.names = FALSE)
+        
       }
-      
+      write.csv(merged_data,file = merged_data_file,row.names = FALSE)
     }
 }
 total_time = Sys.time() - startTime;
