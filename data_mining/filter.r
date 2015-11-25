@@ -78,9 +78,8 @@ sector = sector_html_titles[1];
           
         }
         print(paste0(round(which(stock_list == stock)/length(stock_list)*100,2),'% Done, [', ncol(merged_data),'/',length(stock_list),'] year: ', year, ' sector: ', sector ));
-        write.csv(merged_data,file = merged_data_file,row.names = FALSE)
       }
-      
+      write.csv(merged_data,file = merged_data_file,row.names = FALSE);
     }
 }
 total_time = Sys.time() - startTime;

@@ -51,7 +51,7 @@ switch nargin
         [~,P] = min(Risk);
 
         % Build the first portfolio
-        Wp = ones(length(P),1)./length(P);
+        Wp = [1];
         
         % Quadprog Settings
         Wlow = @(n) -ones(n,1);
@@ -65,7 +65,7 @@ switch nargin
     case 6
         if isempty(P) || isempty(Wp)
             [~,P] = min(Risk);
-            Wp = ones(length(P),1)./length(P);
+            Wp = [1];
         end
         if size(Wp,1) == 1
             Wp = Wp';
@@ -81,7 +81,7 @@ switch nargin
         end
         if isempty(P) || isempty(Wp)
             [~,P] = min(Risk);
-            Wp = ones(length(P),1)./length(P);
+            Wp = [1];
         end
         if size(Wp,1) == 1
             Wp = Wp';
@@ -104,10 +104,10 @@ RisP = @(p,w) w'*CoRisk(p,p)*w;
 sRisk = [RisP(P,Wp)];
 
 function OUTPUT()
-    disp('---------------------------------');
-    fprintf('The Current Portfolio consists of the following Assets:\n\n');
-    fprintf('> Asset %3.0f: w=%1.4f, E[X%G]=%1.4f, Var[X%G]=%1.4f\n',[P ; Wp'; P; Ret(P); P; Risk(P)']);
-    fprintf('\n> E[P] = %1.4f, Var[P] = %1.4f\n', [RetP(P,Wp) RisP(P,Wp)]);
+%    disp('---------------------------------');
+%    fprintf('The Current Portfolio consists of the following Assets:\n\n');
+%    fprintf('> Asset %3.0f: w=%1.4f, E[X%G]=%1.4f, Var[X%G]=%1.4f\n',[P ; Wp'; P; Ret(P); P; Risk(P)']);
+%    fprintf('\n> E[P] = %1.4f, Var[P] = %1.4f\n', [RetP(P,Wp) RisP(P,Wp)]);
 end
 function addPort()
     for repNum = 1:portlim-length(P)
@@ -115,7 +115,7 @@ function addPort()
         Unsel = setdiff(1:length(Ret),P);
         % Set Helpers
         temp = Inf;
-        fID = P;
+        fID = [];
         fW = Wp;
         % Find next best Portfolio
         for portID = Unsel
@@ -148,30 +148,32 @@ end
 function redPort()
     temp = Inf;
     fIDs = P;
-    fW   = Wp;
     for portID = P
         % Create a reduced list
         redList = setdiff(P,portID);
+        if(~isempty(redList))
+            fID = [];
+            fW = Wp;
+            % Get Mean, Covariance Matrix, and number of assets
+            M = Ret(redList);
+            % Test if its possible to form a portfolio with the given assets
+                if mp < max(M) && mp > min(M)
+                    S = CoRisk(redList,redList);
+                    n = length(M);
 
-        % Get Mean, Covariance Matrix, and number of assets
-        M = Ret(redList);
-        % Test if its possible to form a portfolio with the given assets
-            if mp < max(M) && mp > min(M)
-                S = CoRisk(redList,redList);
-                n = length(M);
-
-                % Optimize weights
-                w = quadprog(2.*S,[],[],[],[ M ; ones(1,n)],[mp;1],...
-                    Wlow(n),ones(n,1),...
-                    [],optimoptions('quadprog','Algorithm','interior-point-convex','Display','off'));
-                % Determine if Portfolio is optimal
-                if RisP(redList,w) < temp
-                    temp = RisP(redList,w);
-                    fIDs = redList;
-                    fW = w;
-                    sRisk = [sRisk; temp];
+                    % Optimize weights
+                    w = quadprog(2.*S,[],[],[],[ M ; ones(1,n)],[mp;1],...
+                        Wlow(n),ones(n,1),...
+                        [],optimoptions('quadprog','Algorithm','interior-point-convex','Display','off'));
+                    % Determine if Portfolio is optimal
+                    if RisP(redList,w) < temp
+                        temp = RisP(redList,w);
+                        fIDs = redList;
+                        fW = w;
+                        sRisk = [sRisk; temp];
+                    end
                 end
-            end
+        end
     end
     % Set a new Portfolio as our current
     P   = fIDs;
