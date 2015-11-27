@@ -89,13 +89,13 @@ switch nargin
 end
 % Mean checker
 mpmod = false;
-if mp >= max(Ret) 
-    mp = max(Ret)*0.95;
-    mpmod = true;
-elseif mp <= min(Ret(Ret > 0))
-    mp = mean(Ret(Ret > 0));
-    mpmod = true;
-end
+%if mp >= max(Ret) 
+%    mp = max(Ret)*0.95;
+%    mpmod = true;
+%elseif mp <= min(Ret(Ret > 0))
+%    mp = mean(Ret(Ret > 0));
+%    mpmod = true;
+%end
 
 
 % Helpers
@@ -122,7 +122,7 @@ function addPort()
         % Get the Expected Returns
         M = Ret([P portID]);
             % Test if its possible to form a portfolio with the given assets
-            if mp < max(M) && mp > min(M)
+            %if mp < max(M) && mp > min(M)
                 % Get Covariance Matrix and count the current number of assets
                 S = CoRisk([P portID],[P portID]);
                 n = length(M);
@@ -131,13 +131,13 @@ function addPort()
                     Wlow(n),ones(n,1),...
                     [],optimoptions('quadprog','Algorithm','interior-point-convex','Display','off'));
                 % Determine if Portfolio is optimal
-                if RisP([P portID],w) < temp
+                if (~isempty(w) && RisP([P portID],w) < temp)
                     fID = portID;
                     temp = RisP([P portID],w);
                     fW = w;
                     sRisk = [sRisk; temp];
                 end
-            end
+            %end
         end
         % Set a new Portfolio as our current
         P = [P fID];
@@ -148,16 +148,16 @@ end
 function redPort()
     temp = Inf;
     fIDs = P;
+    fW = Wp;
     for portID = P
         % Create a reduced list
         redList = setdiff(P,portID);
         if(~isempty(redList))
             fID = [];
-            fW = Wp;
             % Get Mean, Covariance Matrix, and number of assets
             M = Ret(redList);
             % Test if its possible to form a portfolio with the given assets
-                if mp < max(M) && mp > min(M)
+                %if mp < max(M) && mp > min(M)
                     S = CoRisk(redList,redList);
                     n = length(M);
 
@@ -166,13 +166,13 @@ function redPort()
                         Wlow(n),ones(n,1),...
                         [],optimoptions('quadprog','Algorithm','interior-point-convex','Display','off'));
                     % Determine if Portfolio is optimal
-                    if RisP(redList,w) < temp
+                    if (~isempty(w) && RisP(redList,w) < temp)
                         temp = RisP(redList,w);
                         fIDs = redList;
                         fW = w;
                         sRisk = [sRisk; temp];
                     end
-                end
+                %end
         end
     end
     % Set a new Portfolio as our current

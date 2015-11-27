@@ -32,7 +32,7 @@ sharpe = @(P,Wp,rfr) (Ret(P)*Wp-rfr)/sqrt(Wp'*CoRisk(P,P)*Wp);
 
 mps = [0];
 risks = [0];
-limmp = [max([min(Ret(Ret>0)) rfr]) max(Ret)]; 
+limmp = [max([min(abs(Ret)) rfr]) max(abs(Ret))]; 
 clc
 sharpes = [Inf 0];
 c = 2;
@@ -49,6 +49,8 @@ function [] = optimo()
         sharpes(c) = sharpe(P,Wp,rfr);
         [P, Wp, lRisk] = optimizePort( Ret, CoRisk, mk, portlim, P, Wp, posWps );
         
+        disp(Ret(P)*Wp);
+        disp(mk);
         sharpes(c+1) = sharpe(P,Wp,rfr);
         mps(c) = mk;
         risks(c) = lRisk;
