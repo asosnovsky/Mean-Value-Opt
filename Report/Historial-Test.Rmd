@@ -1,0 +1,47 @@
+---
+title: "Mean Variance Optimization - Historical Test"
+output:
+  pdf_document: default
+  word_document:
+    fig_height: 10
+    fig_width: 10
+headers-include: \usepackage{float}
+---
+
+```{r setup, include=FALSE}
+require(chron)
+dataFolder = "F:/Mean-Value-Opt/implementation/future-data";
+#setwd(dataFolder)
+sectors = dir(dataFolder)
+fprice = list();
+for(sector in sectors) {
+  fprice[[gsub('.csv','',sector)]] = as.numeric(
+    read.csv(paste0(dataFolder,'/',sector),header = FALSE));
+}
+
+```
+
+After the optimization process we run the model on the 2008-2012 period. The method involved partitioning the data into years, and then estimated the optimal weights of each year. Then we took those weights and applied them to future prices.
+
+That is, we estimated the weights $W^T_j = [w_1,...,w_{10}]$, with their respected indexes $P_j = [...]$ for year $j$. Then applied them to the future market prices, where if $M_{j+1}$ is a matrix of market prices of all stock prices at year $j+1$, then our future prices in 2009 are $w^T_{2008}M_{2009}(:,P_{2008})$. The results are as follows:
+```{r plot, echo=FALSE, fig.pos="H", fig.height=7 }
+  dates<-seq(as.Date("2009/1/1"),as.Date("2012/12/31"), by = "days");
+  dates = as.Date(dates[!is.weekend(dates)]);
+  par(mfrow = c(3, 3));
+  for(sector in gsub('.csv','',sectors)) {
+    with(data.frame(
+        dates=as.Date(dates[1:length(fprice[[sector]])]),
+        data=fprice[[sector]]),{
+          plot(x=dates,y=data, type='l', 
+               main=paste(sector, "Sector"), 
+               xlab="Time", ylab="Close Price"
+          );
+    })
+  }
+```
+
+As you can see, each implimentation follows a similar trend. We see a clear bad optimization period for the 2009-2010 years. This is due to the fact that the weights in this time are optimized assuming the trend of the 2008 year will continue to the next year. However, 2008 had a particularly bad period for the economy, which did not last after the year ended. Hence, the period itself provided the wrong idea as for what will be seen in the future.
+
+The same can be said about the optimization period of 2012-2013, this period was optimized using prices from 2011-2012, which was the time when Greece defaulted, which sent a major shock to the economy. 
+
+These sort of examples expose the inefficiency of MVP when it is applied to large datasets. 

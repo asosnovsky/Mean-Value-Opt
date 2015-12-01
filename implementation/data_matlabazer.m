@@ -14,7 +14,7 @@ RFR = [0.0365    0.0117    0.0143    0.0169    0.0100 ];
 
 
 %% % (2) Select Data
-[ Ret, CoRisk, stockNames, selData, data  ] = data_selector( folders, dates(1), sectors(8) );
+[ Ret, CoRisk, stockNames, selData, data  ] = data_selector( folders, dates(1), sectors(7) );
 
 %% (3.0) Test #0 Quadprog vs Pure Lagrange
 clear mp n S M w WW
@@ -43,12 +43,12 @@ square_root_sum_of_error_squared = sqrt(sum((WW(1:end-2)-w).^2)./n)
 %% (3.1) Test Sharpe Optimization
 clear n M S rfr WMp mLims
 clc
-n       = length(Ret);
+n       = 10;
 tP      = 1:n;
 M       = Ret(tP);
 S       = CoRisk(tP,tP);
 rfr     = RFR(1);
-mLims   = 1E7;
+mLims   = 1E10;
 
 % Matlab
 tic
@@ -62,10 +62,14 @@ tic
     Our_Sharpe = (M*Wp-rfr)/sqrt(Wp'*S*Wp)
     fprintf('\nUs Time:  ');
 toc
+
+disp(WMp./Wp);
+
+%%
 figure('Name','Our Optimization');
-plot(Wp'*selData')
+plot(Wp'*selData(:,1:n)')
 figure('Name','Matlab Optimization');
-plot(WMp'*selData')
+plot(WMp'*selData(:,1:n)')
 
 %% (3.2) 
 clc
