@@ -57,6 +57,7 @@ tic
     Matlab_Sharpe = (M*WMp-rfr)/sqrt(WMp'*S*WMp)
     fprintf('Matlab Time:  ');
 toc 
+% Us
 tic
     [ sharpe, Wp, ~, ~ ] = optimizeSupreme( M, S, rfr );
     Our_Sharpe = (M*Wp-rfr)/sqrt(Wp'*S*Wp)
@@ -75,7 +76,7 @@ plot(WMp'*selData(:,1:n)')
 clc
 PortfolioLimit = 10;
 tic
-    [ WpL, P, cSharpe ] = optimizeSelect( Ret, CoRisk, RFR(1), PortfolioLimit );
+    [ WpL, P, cSharpe ] = optimizeSelect( Ret(1:n), CoRisk(1:n,1:n), RFR(1), PortfolioLimit );
 toc
 figure('Name',sprintf('Optimal %d Asset Portfolio', PortfolioLimit));
 plot(WpL'*selData(:,P)');
