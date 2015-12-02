@@ -14,7 +14,7 @@ RFR = [0.0365    0.0117    0.0143    0.0169    0.0100 ];
 
 
 %% % (2) Select Data
-[ Ret, CoRisk, stockNames, selData, data  ] = data_selector( folders, dates(1), sectors(7) );
+[ Ret, CoRisk, stockNames, selData, data  ] = data_selector( folders, dates(1), sectors(6) );
 
 %% (3.0) Test #0 Quadprog vs Pure Lagrange
 clear mp n S M w WW
