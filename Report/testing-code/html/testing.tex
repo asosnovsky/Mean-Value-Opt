@@ -88,9 +88,9 @@ toc
 square_root_sum_of_error_squared = sqrt(sum((WW(1:end-2)-w).^2)./n)
 \end{verbatim}
 
-        \color{lightgray} \begin{verbatim}Matlab Time:  Elapsed time is 0.009409 seconds.
+        \color{lightgray} \begin{verbatim}Matlab Time:  Elapsed time is 0.754263 seconds.
 
-Us Time:  Elapsed time is 0.000961 seconds.
+Us Time:  Elapsed time is 0.002505 seconds.
 
 square_root_sum_of_error_squared =
 
@@ -140,14 +140,13 @@ Matlab_Sharpe =
 
     0.0963
 
-Matlab Time:  Elapsed time is 0.808331 seconds.
+Matlab Time:  Elapsed time is 1.997342 seconds.
+\end{verbatim} \color{black}
+    
+        \color{lightgray} \begin{verbatim}Undefined function 'optimizeSupreme' for input arguments of type 'double'.
 
-Our_Sharpe =
-
-    0.0490
-
-
-Us Time:  Elapsed time is 0.010628 seconds.
+Error in testing (line 91)
+    [ sharpe, Wp, ~, ~ ] = optimizeSupreme( M, S, rfr );
 \end{verbatim} \color{black}
     \begin{par}
 As you can see, our function outperformed the matlab function by a great deal. As a matter of fact, it performs significally better with higher values of \texttt{n}. However, our sharpe value seems to be at first glance much lower than matlab. This is beacuse we found a \textit{parrellel} portfolio to the one of matlab. To show what we mean by that, one may simply observe the ratio between the matlab weights and our weights:
@@ -155,22 +154,7 @@ As you can see, our function outperformed the matlab function by a great deal. A
 \begin{verbatim}
 disp(WMp./Wp);
 \end{verbatim}
-
-        \color{lightgray} \begin{verbatim}   1.0e+08 *
-
-    5.3632
-    5.1647
-    5.0474
-    5.1848
-    5.8016
-    5.2656
-    4.9734
-    5.1739
-    5.3251
-    4.9616
-
-\end{verbatim} \color{black}
-    \begin{par}
+\begin{par}
 Or may look at the plot of the optimization period:
 \end{par} \vspace{1em}
 \begin{verbatim}
@@ -185,10 +169,6 @@ title('Matlab');
 xlabel('Time');
 ylabel('Value of Portfolio');
 \end{verbatim}
-
-\includegraphics [width=4in]{testing_01.png}
-
-\includegraphics [width=4in]{testing_02.png}
 \begin{par}
 As you can see the only difference between our method and the matlab method is a multiplier. In this case the multiplier can be computed as approximately:
 \end{par} \vspace{1em}
@@ -197,19 +177,7 @@ approximate_multiplier = mean(WMp./Wp)
 WWW = approximate_multiplier.*Wp;
 Our_Adjusted_Sharpe = (M*WWW-rfr)/sqrt(WWW'*S*WWW)
 \end{verbatim}
-
-        \color{lightgray} \begin{verbatim}
-approximate_multiplier =
-
-   5.2261e+08
-
-
-Our_Adjusted_Sharpe =
-
-    0.0929
-
-\end{verbatim} \color{black}
-    \begin{par}
+\begin{par}
 Hence, our method compares well with matlab. As it provides us a good-enough estimate for the sharpe of the portfolio.
 \end{par} \vspace{1em}
 

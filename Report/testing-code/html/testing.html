@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Testing and Code</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-12-02"><meta name="DC.source" content="testing.m"><style type="text/css">
+      --><title>Testing and Code</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-12-03"><meta name="DC.source" content="testing.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -94,9 +94,9 @@ toc
 
 <span class="comment">% Comparison</span>
 square_root_sum_of_error_squared = sqrt(sum((WW(1:end-2)-w).^2)./n)
-</pre><pre class="codeoutput">Matlab Time:  Elapsed time is 0.009071 seconds.
+</pre><pre class="codeoutput">Matlab Time:  Elapsed time is 0.030577 seconds.
 
-Us Time:  Elapsed time is 0.000978 seconds.
+Us Time:  Elapsed time is 0.000972 seconds.
 
 square_root_sum_of_error_squared =
 
@@ -129,28 +129,12 @@ Matlab_Sharpe =
 
     0.0963
 
-Matlab Time:  Elapsed time is 0.809752 seconds.
+Matlab Time:  Elapsed time is 0.892123 seconds.
+</pre><pre class="codeoutput error">Undefined function 'optimizeSupreme' for input arguments of type 'double'.
 
-Our_Sharpe =
-
-    0.0490
-
-
-Us Time:  Elapsed time is 0.014013 seconds.
+Error in testing (line 91)
+    [ sharpe, Wp, ~, ~ ] = optimizeSupreme( M, S, rfr );
 </pre><p>As you can see, our function outperformed the matlab function by a great deal. As a matter of fact, it performs significally better with higher values of <tt>n</tt>. However, our sharpe value seems to be at first glance much lower than matlab. This is beacuse we found a <i>parrellel</i> portfolio to the one of matlab. To show what we mean by that, one may simply observe the ratio between the matlab weights and our weights:</p><pre class="codeinput">disp(WMp./Wp);
-</pre><pre class="codeoutput">   1.0e+08 *
-
-    5.3632
-    5.1647
-    5.0474
-    5.1848
-    5.8016
-    5.2656
-    4.9734
-    5.1739
-    5.3251
-    4.9616
-
 </pre><p>Or may look at the plot of the optimization period:</p><pre class="codeinput">figure(<span class="string">'Name'</span>,<span class="string">'Our Optimization'</span>);
 plot(Wp'*selData(:,1:n)')
 title(<span class="string">'Our Function'</span>);
@@ -161,19 +145,9 @@ plot(WMp'*selData(:,1:n)')
 title(<span class="string">'Matlab'</span>);
 xlabel(<span class="string">'Time'</span>);
 ylabel(<span class="string">'Value of Portfolio'</span>);
-</pre><img vspace="5" hspace="5" src="testing_01.png" alt=""> <img vspace="5" hspace="5" src="testing_02.png" alt=""> <p>As you can see the only difference between our method and the matlab method is a multiplier. In this case the multiplier can be computed as approximately:</p><pre class="codeinput">approximate_multiplier = mean(WMp./Wp)
+</pre><p>As you can see the only difference between our method and the matlab method is a multiplier. In this case the multiplier can be computed as approximately:</p><pre class="codeinput">approximate_multiplier = mean(WMp./Wp)
 WWW = approximate_multiplier.*Wp;
 Our_Adjusted_Sharpe = (M*WWW-rfr)/sqrt(WWW'*S*WWW)
-</pre><pre class="codeoutput">
-approximate_multiplier =
-
-   5.2261e+08
-
-
-Our_Adjusted_Sharpe =
-
-    0.0929
-
 </pre><p>Hence, our method compares well with matlab. As it provides us a good-enough estimate for the sharpe of the portfolio.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Testing and Code

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.19)  2 DEC 2015 17:01
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.19)  3 DEC 2015 13:52
 entering extended mode
 **F:/Mean-Value-Opt/Report/testing-code/html/testing.tex
 (F:/Mean-Value-Opt/Report/testing-code/html/testing.tex
@@ -71,18 +71,18 @@ File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
 Package color Info: Driver file: pdftex.def on input line 130.
 )
 (F:\Mean-Value-Opt\Report\testing-code\html\testing.aux)
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -98,71 +98,75 @@ LaTeX Font Info:    ... okay on input line 13.
 \makeMPintoPDFobject=\count93
 \everyMPtoPDFconversion=\toks16
 )
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 27.
- ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\omscmr.fd"
-File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
-)
-LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 27.
+Overfull \hbox (69.58366pt too wide) in paragraph at lines 19--21
+\OT1/cmr/m/n/10 the tests found here can be found in the \OT1/cmtt/m/n/10 Mean-
+Value-Opt/implementation/data[]matlabazer.m
+ []
 
-Overfull \hbox (148.4957pt too wide) in paragraph at lines 38--38
+
+Overfull \hbox (148.4957pt too wide) in paragraph at lines 29--29
 []\OT1/cmtt/m/n/10 [ Ret, CoRisk, stockNames, selData, data  ] = data\_selector
 ( folders, dates(1), sectors(6) ); 
  []
 
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 59.
+(Font)              <7> on input line 50.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 59.
+(Font)              <5> on input line 50.
+
+Overfull \hbox (6.11124pt too wide) in paragraph at lines 56--58
+[]\OT1/cmr/m/n/10 Next we will see how our func-tion com-pares to the mat-lab b
+ase func-tion \OT1/cmtt/m/n/10 quadprog\OT1/cmr/m/n/10 .
+ []
+
 [1
 
 {C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}]
-Overfull \hbox (127.49588pt too wide) in paragraph at lines 89--89
+Overfull \hbox (127.49588pt too wide) in paragraph at lines 80--80
 []            \OT1/cmtt/m/n/10 optimoptions('quadprog','Algorithm','interior-po
 int-convex','Display','off'));[] 
  []
 
 
-Overfull \hbox (48.74657pt too wide) in paragraph at lines 89--89
+Overfull \hbox (48.74657pt too wide) in paragraph at lines 80--80
 []    \OT1/cmtt/m/n/10 WW = [ 2*S M' ones(n,1); M 0 0 ; ones(1,n) 0 0 ]\[ zeros
 (n,1); mp; 1 ];[] 
  []
 
 
-Overfull \hbox (6.74693pt too wide) in paragraph at lines 89--89
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 80--80
 []\OT1/cmtt/m/n/10 square_root_sum_of_error_squared = sqrt(sum((WW(1:end-2)-w).
 ^2)./n)[] 
  []
 
 [2]
-Overfull \hbox (274.4946pt too wide) in paragraph at lines 136--136
+Overfull \hbox (274.4946pt too wide) in paragraph at lines 127--127
 []    \OT1/cmtt/m/n/10 p =  Portfolio('AssetMean',M,'AssetCovar',S,'RiskFreeRat
 e',rfr,'Budget',1,'LowerBound',-mLims,'UpperBound',mLims);[] 
  []
 
-[3] <testing_01.png, id=16, 421.575pt x 316.18124pt>
+[3] <testing_01.png, id=17, 421.575pt x 316.18124pt>
 File: testing_01.png Graphic file (type png)
  <use testing_01.png>
-Package pdftex.def Info: testing_01.png used on input line 189.
+Package pdftex.def Info: testing_01.png used on input line 180.
 (pdftex.def)             Requested size: 289.07999pt x 216.81442pt.
 
-<testing_02.png, id=17, 421.575pt x 316.18124pt> [4]
+<testing_02.png, id=18, 421.575pt x 316.18124pt>
 File: testing_02.png Graphic file (type png)
  <use testing_02.png>
-Package pdftex.def Info: testing_02.png used on input line 191.
+Package pdftex.def Info: testing_02.png used on input line 182.
 (pdftex.def)             Requested size: 289.07999pt x 216.81442pt.
-
-[5 <F:/Mean-Value-Opt/Report/testing-code/html/testing_01.png (PNG copy)> <F:/M
-ean-Value-Opt/Report/testing-code/html/testing_02.png (PNG copy)>] [6]
+ [4 <F:/Mean-Value-Opt/Report/testing-code/html/testing_01.png (PNG copy)>] [5 
+<F:/Mean-Value-Opt/Report/testing-code/html/testing_02.png (PNG copy)>]
 (F:\Mean-Value-Opt\Report\testing-code\html\testing.aux) ) 
 Here is how much of TeX's memory you used:
- 1188 strings out of 493921
- 16048 string characters out of 3144870
- 69018 words of memory out of 3000000
- 4519 multiletter control sequences out of 15000+200000
+ 1171 strings out of 493921
+ 15748 string characters out of 3144870
+ 68018 words of memory out of 3000000
+ 4505 multiletter control sequences out of 15000+200000
  5672 words of font info for 21 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 27i,6n,19p,526b,241s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,6n,19p,526b,249s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files (x8
 6)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program Files (x86)
 /MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files (x86)/M
@@ -170,9 +174,9 @@ iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/MiKT
 eX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKTeX
  2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Program Files (x86)/MiKTeX 2
 .9/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on testing.pdf (6 pages, 114153 bytes).
+Output written on testing.pdf (5 pages, 111847 bytes).
 PDF statistics:
- 47 PDF objects out of 1000 (max. 8388607)
+ 44 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 
