@@ -17,7 +17,7 @@ clc
 h = animatedline;
 
 X = random('gam',200,2,1,1);
-X = [X ; X+cumsum(random('norm',0,10,3650,1))];
+X = [X ; X+cumsum(random('norm',0,1,3650,1))];
 
 for k = 1:length(X)
     addpoints(h,k,X(k));
