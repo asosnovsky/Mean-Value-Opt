@@ -27,8 +27,8 @@
 \ \ \ Our program allows the user to find the most optimal portfolio for a given time period using the ‘mean variance optimization’ method. This program selects a portfolio of stocks from the global market that has minimum variance, as well as a maximized sharpe ratio.
 
 \subsection{How Does The Program Do It?}
-\ \ \ The program begins by partitioning the periods of a given time to smaller intervals. It then uses Yahoo Finance to download daily stock prices of over $30,000$ stocks traded on markets around the world. The stock data is then partitioned by industry and year with respect to indicated period, after which stocks which are missing more than $30\%$ of the data are removed from a given partition. Next the program enters the filtering stage. Where the existing set of stocks is divided into pairs of stocks that have the most negative correlation with each other, and then selects the top $25\%$ of pairs. Within that subset, the program selects the individual stocks with the top $25\%$ lowest variation. The portfolio now enters the selection stage. \\ \\
-The selection stage is divided into two parts, which repeat as needed. The first part, addition part, we provide the program with a set of indices of the stocks within the market. If that set is empty then the stock with the lowest variance is added initially to the portfolio. Then the selection algorithm begins in which stocks are added to the portfolio only if they increase the Sharpe Ratio of the portfolio when the weights are optimized using the Mean variance optimization method, more than any other stock. Once a particular limit of stocks is reached, the algorithm ends. \\ \\
+\ \ \ The program begins by partitioning the periods of a given time to smaller intervals. It then uses Yahoo Finance to download daily stock prices of over $30,000$ stocks traded on markets around the world. The stock data is then partitioned by industry and year with respect to indicated period, after which stocks that are missing more than $30\%$ of the data are removed from a given partition. Next the program enters the filtering stage, where the existing set of stocks is divided into pairs of stocks that have the most negative correlation with each other, and then the top $25\%$ of pairs are selected. Then within that subset, the program selects the individual stocks with the top $25\%$ lowest variation. The portfolio now enters the selection stage. \\ \\
+The selection stage is divided into two parts, which repeat as needed. The first part, the addition part, we provide the program with a set of indices of the stocks within the market. If that set is empty then the stock with the lowest variance is added initially to the portfolio. Then the selection algorithm begins in which stocks are added to the portfolio only if they increase the Sharpe Ratio of the portfolio when the weights are optimized using the Mean variance optimization method, more than any other stock. Once a particular limit of stocks is reached, the algorithm ends. \\ \\
 \ \ \  In the second part of the selection stage, the reduction part, the program will be provided with a set of indices of stocks. The program then will create every possible combination of portfolios with one less asset in it, than originally provided. Then the portfolio with the highest sharpe ratio is kept.  \\ \\ 
 \ \ \ This stage will alternate between addition and reduction, until a convergence will occur. The resulting portfolio should be the minimum variance portfolio that offers the highest Sharpe ratio. 
 
@@ -41,7 +41,7 @@ The selection stage is divided into two parts, which repeat as needed. The first
 \ \ \  Mean variance optimization is a theory developed by Henry Markowitz in 1952, for portfolio optimization that has been standard for creating efficient asset allocation strategies for more than half a century. The theory aims at finding the optimal set of weights that achieves a desired expected return, $\mu_p$ from the portfolio with minimal risk $\sigma^2_p$. It does so, by defining a portfolio as a weighted average of market assets, $P = \sum_{j=1}^n w_j X_j$, and then uses methods of calculus to approximate the values of $w_j$ such that the variance function, $\sigma_p^2 = \sum_{j=1}^n\sum_{i=1}^nw_jw_iCov[X_i,X_j]$ is minimized with respect to a pre-set value $\mu_p$, where $\mu_p=\sum_{i=1}^nE[X_i]$.  It has also been widely criticized by many statisticians and economics for some of the assumptions that it makes on the mean and volatility of assets. As will be shown in this paper, the underlying issues that the assumptions of the model bring, become visible when the model is applied to a complete market. However, these problems become less severe as we reduce the intervals of time and increase the number of optimization instances.\\
 
 \subsubsection{The Sharpe Ratio}
-\ \ \  The Sharpe Ratio, developed in 1966 by William F. Sharpe, is a method of relating the portfolio return relatively to its risk. It is defined as: $Sharpe$ = $\frac{(\mu_p - r_f)}{\sqrt{\sigma_p^2}}$, where $r_f$ is the risk free interest rate given by the market or a government.  This is a measure for calculating risk-adjusted return, that is, the expected return earned in excess of the risk free rate per unit of standard deviation. In other words, for each risk we are taking, how much expected return are we getting out of it. But one of the problems with the Sharpe Ratio is that it treats all volatility the same, and this can result in penalizing upside volatility (potential of very high returns).\\
+\ \ \  The Sharpe Ratio, developed in 1966 by William F. Sharpe, is a method of relating the portfolio return relatively to its risk. It is defined as: $Sharpe$ = $\frac{(\mu_p - r_f)}{\sqrt{\sigma_p^2}}$, where $r_f$ is the risk free interest rate given by the market or a government.  This is a measure for calculating risk-adjusted return, that is, the expected return earned in excess of the risk free rate per unit of standard deviation. In other words, for each unit of risk we are taking, how much expected return are we getting out of it. But one of the problems with the Sharpe Ratio is that it treats all volatility the same, and this can result in penalizing upside volatility (potential of very high returns).\\
 
 \section{Methodology}
 \subsection{Mean-Variance Portfolio Optimization}
@@ -106,7 +106,7 @@ We are now ready to formulate the problem. We want the minimal risk with a certa
 & \underset{w}{\text{minimize}}
 & &\sigma_p^2 = \mathbf{w^T\Sigma w}\\
 & \text{subject to}
-& & \mu_p = \mathbf{w}^T\mathbf{\mu} \\
+& & \mathbf{w^T\mu} = \mu_p \\
 &&& \mathbf{w}^T\mathbf{1}=1
 \end{aligned}
 \end{equation}
@@ -117,7 +117,7 @@ Like mentioned above that this can be easily generalize to $n$ assets, doing so 
 & \underset{w}{\text{minimize}}
 & &\sigma_p^2 = \mathbf{w^T\Sigma w}\\
 & \text{subject to}
-& & \mathbf{w^Tu} = \mu_p \\
+& & \mathbf{w^T\mu} = \mu_p \\
 &&& \mathbf{w^T1}=1
 \end{aligned}
 \end{equation}
@@ -130,20 +130,20 @@ It turns out that (3) is a quadratic problem which can be solved using one of th
 
 To solve the constrained minimization problem (3), we first create the Lagrangian function 
 $$
-L(\mathbf{w}, \lambda_1, \lambda_2) = \mathbf{w^T\Sigma w} + \lambda_1(\mathbf{w^Tu} - \mu_p) + \lambda_2(\mathbf{w^T1} - 1)
+L(\mathbf{w}, \lambda_1, \lambda_2) = \mathbf{w^T\Sigma w} + \lambda_1(\mathbf{w^T\mu} - \mu_p) + \lambda_2(\mathbf{w^T1} - 1)
 $$
 There are only two Lagrange multipliers $\lambda_1$ and $\lambda_2$ because (3) has only two constraints. Lagrange Method requires taking derivative of $L(\mathbf{w}, \lambda_1, \lambda_2)$ with respect to every single variables and set them equal to 0, doing so we have: 
 \begin{equation}
 \begin{split}
 \frac{\partial L(\mathbf{w}, \lambda_1, \lambda_2)}{\partial \mathbf{w}} &= 2\mathbf{\Sigma w} + \lambda_1\mathbf{\mu} + \lambda_2\mathbf{1} = 0 \\
-\frac{\partial L(\mathbf{w}, \lambda_1, \lambda_2)}{\partial \lambda_1} &=  \mathbf{w^Tu} - \mu_p = 0\\
+\frac{\partial L(\mathbf{w}, \lambda_1, \lambda_2)}{\partial \lambda_1} &=  \mathbf{w^T\mu} - \mu_p = 0\\
 \frac{\partial L(\mathbf{w}, \lambda_1, \lambda_2)}{\partial \lambda_2} &= \mathbf{w^T1} - 1 = 0\\
 \end{split}
 \end{equation}
 
 The number of variables is always equal to the number of asset $n$ + 2 (2 for the additional Lagrange multipliers we introduced). Therefore, (4) consists of $n+2$ linear equations in $n+2$ unknowns ($\mathbf{w}, \lambda_1, \lambda_2$). We can represent the system of linear equations using matrix algebra as: 
 \begin{equation*}
-\begin{pmatrix} 2\mathbf{\Sigma} & \mathbf{\mu} & \mathbf{1} \\ \mathbf{\mu^T} & 0 & 0 \\ 1^T & 0 & 0 \end{pmatrix} 
+\begin{pmatrix} 2\mathbf{\Sigma} & \mathbf{\mu} & \mathbf{1} \\ \mathbf{\mu^T} & 0 & 0 \\ \mathbf{1^T} & 0 & 0 \end{pmatrix} 
 \begin{pmatrix}
 \mathbf{w} \\ \lambda_1 \\ \lambda_2
 \end{pmatrix}
@@ -160,7 +160,7 @@ $$
 
 where
 \begin{equation*}
-\mathbf{M} = \begin{pmatrix} 2\mathbf{\Sigma} & \mathbf{\mu} & \mathbf{1} \\ \mathbf{\mu^T} & 0 & 0 \\ 1^T & 0 & 0 \end{pmatrix}, 
+\mathbf{M} = \begin{pmatrix} 2\mathbf{\Sigma} & \mathbf{\mu} & \mathbf{1} \\ \mathbf{\mu^T} & 0 & 0 \\ \mathbf{1^T} & 0 & 0 \end{pmatrix}, 
 \mathbf{y_w}=\begin{pmatrix}
 \mathbf{w} \\ \lambda_1 \\ \lambda_2
 \end{pmatrix} \text{,and }
@@ -182,7 +182,7 @@ Recall the definition of the Sharpe ratio: $Sharpe$ = $\frac{(\mu_p - r_f)}{\sqr
 & \underset{w}{\text{maximize}}
 & & Sharpe = \frac{(\mu_p - r_f)}{\sqrt{\mathbf{w^T\Sigma w}}} \\
 & \text{subject to}
-& & \mathbf{w^Tu} = \mu_p \\
+& & \mathbf{w^T\mu} = \mu_p \\
 &&& \mathbf{w^T1}=1
 \end{aligned}
 \end{equation}
