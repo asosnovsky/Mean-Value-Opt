@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.19)  3 DEC 2015 17:35
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.19)  3 DEC 2015 18:06
 entering extended mode
 **F:/Mean-Value-Opt/Report/SHARPE*SELECTION*PROCESS/SHARPE*SELECTION*PROCESS.te
 x
@@ -280,45 +280,45 @@ Underfull \hbox (badness 10000) in paragraph at lines 44--45
  []
 
 [2]
-Underfull \hbox (badness 10000) in paragraph at lines 96--99
+Underfull \hbox (badness 10000) in paragraph at lines 95--98
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 101--104
+Underfull \hbox (badness 10000) in paragraph at lines 100--103
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 123--128
+Underfull \hbox (badness 10000) in paragraph at lines 122--126
 
  []
 
 [3]
-Underfull \hbox (badness 10000) in paragraph at lines 174--177
+Underfull \hbox (badness 10000) in paragraph at lines 172--175
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 174--177
+Underfull \hbox (badness 10000) in paragraph at lines 172--175
 
  []
 
 [4]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 208.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 206.
 
  ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\omscmr.fd"
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 208.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 206.
 
-Underfull \hbox (badness 10000) in paragraph at lines 219--220
+Underfull \hbox (badness 10000) in paragraph at lines 217--218
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 230--231
+Underfull \hbox (badness 10000) in paragraph at lines 228--229
 
  []
 
@@ -326,16 +326,21 @@ Underfull \hbox (badness 10000) in paragraph at lines 230--231
 File: testing_01.png Graphic file (type png)
 
 <use testing_01.png>
-Package pdftex.def Info: testing_01.png used on input line 401.
+Package pdftex.def Info: testing_01.png used on input line 399.
 (pdftex.def)             Requested size: 252.94499pt x 189.7102pt.
  <testing_02.png, id=42, 421.575pt x 316.18124pt>
 File: testing_02.png Graphic file (type png)
 
 <use testing_02.png>
-Package pdftex.def Info: testing_02.png used on input line 401.
+Package pdftex.def Info: testing_02.png used on input line 399.
 (pdftex.def)             Requested size: 252.94499pt x 189.7102pt.
  [8]
-Underfull \hbox (badness 10000) in paragraph at lines 425--427
+Underfull \hbox (badness 10000) in paragraph at lines 423--425
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 428--429
 
  []
 
@@ -349,25 +354,20 @@ Underfull \hbox (badness 10000) in paragraph at lines 432--433
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 434--435
-
- []
-
 [9 <F:/Mean-Value-Opt/Report/SHARPE SELECTION PROCESS/testing_01.png (PNG copy)
 > <F:/Mean-Value-Opt/Report/SHARPE SELECTION PROCESS/testing_02.png (PNG copy)>
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 437--440
+Underfull \hbox (badness 10000) in paragraph at lines 435--438
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 441--444
+Underfull \hbox (badness 10000) in paragraph at lines 439--442
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 441--444
+Underfull \hbox (badness 10000) in paragraph at lines 439--442
 
  []
 
@@ -375,7 +375,7 @@ Missing character: There is no â in font cmr12!
 Missing character: There is no „ in font cmr12!
 Missing character: There is no ¢ in font cmr12!
 
-Underfull \hbox (badness 10000) in paragraph at lines 445--446
+Underfull \hbox (badness 10000) in paragraph at lines 443--444
 
  []
 
@@ -385,11 +385,11 @@ x") )
 Here is how much of TeX's memory you used:
  2602 strings out of 493921
  34102 string characters out of 3144870
- 99837 words of memory out of 3000000
+ 100837 words of memory out of 3000000
  5873 multiletter control sequences out of 15000+200000
  13540 words of font info for 52 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 27i,16n,32p,1243b,249s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,18n,32p,1243b,249s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.p
 fb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx8.pfb>
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C
@@ -404,7 +404,7 @@ MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/Mi
 KTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files (x86)/MiKTe
 X 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Program Files (x86)/MiKTeX 
 2.9/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on "SHARPE SELECTION PROCESS.pdf" (11 pages, 208069 bytes).
+Output written on "SHARPE SELECTION PROCESS.pdf" (11 pages, 208733 bytes).
 PDF statistics:
  96 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
