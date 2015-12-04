@@ -6,3 +6,4 @@ data_mining/time_series
 *.fls
 *.synctex.gz
 *.toc
+*.Rhistory

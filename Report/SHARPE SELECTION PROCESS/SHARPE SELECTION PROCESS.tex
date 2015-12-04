@@ -1,4 +1,4 @@
-\documentclass[12pt,titlepage,a4paper]{article}
+\documentclass[12pt,titlepage,letter]{article}
 % Pre-amble
 	\usepackage[margin=0.5in]{geometry}
 	\usepackage{graphicx}
@@ -60,6 +60,7 @@
 		\subsubsection{The Sharpe Ratio}
 		\ \ \  The Sharpe Ratio, developed in 1966 by William F. Sharpe, is a method of relating the portfolio return relatively to its risk. It is defined as: $Sharpe$ = $\frac{\mu_p - r_f}{\sqrt{\sigma_p^2}}$, where $r_f$ is the risk free interest rate given by the market or a government.  This is a measure for calculating risk-adjusted return, that is, the expected return earned in excess of the risk free rate per unit of standard deviation. In other words, for the amount of risk we are taking, how much expected return are we getting out of it. But one of the problems with the Sharpe Ratio is that it treats all volatility the same, and this can result in penalizing upside volatility (potential of very high returns).\\
 
+\newpage
 \section{Methodology}
 	\subsection{Overview}
 		The way we constructed our algorithm can be summarized in the following flow chart:
@@ -179,7 +180,7 @@
 			where $\mathbf{w} = \begin{pmatrix} w_1 \\ \vdots \\ w_n \end{pmatrix}$, $\pmb{\mu} = \begin{pmatrix} \mu_1 \\ \vdots \\ \mu_n \end{pmatrix}$, $\mathbf{1} = \begin{pmatrix}1 \\ \vdots \\ 1 \end{pmatrix}$, and $\mathbf{\Sigma} = \begin{pmatrix}\sigma_{11}^2 & \dots & \sigma_{1n}^2 \\ \vdots & \ddots & \vdots\\  \sigma_{n1}^2 & \dots & \sigma_{nn}^2 \end{pmatrix}$ is the covariance matrix.\\ \\ 
 			It turns out that (3) is a quadratic problem which can be solved using one of the methods from constraint optimization problem. Some of those methods are: Frank Wolfe's method, active set method, interior point convex method, Lagrange method etc. Since (3) is a minimization problem with only equality constraints, we will use Lagrange method to solve for a solution $\mathbf{w}$ which is the weight of our portfolio. 
 
-		\subsubsection{Lagrange Method to Solve (3)}
+		\subsubsection{Lagrange Method to Solve MVP Problem}
 
 			To solve the constrained minimization problem (3), we first create the Lagrangian function 
 			$$
@@ -247,7 +248,7 @@
 
 		To solve the maximization problem (6), we are using a \textbf{quasi-bisection method} in search for an optimal weight. See appendix for the breakdown of the bisection method.  
 
-	\subsection{Quasi-Bisection Method}
+	\subsubsection{Quasi-Bisection Method}
 		Since the Sharpe ratio is not a simple quadratic function, we could not apply the Lagrangian method without incurring higher level of complexity. Hence we chose to use the quasi-bisection method. Which is a modification of the original bisection method as originally suggest by Burden \& Faires 1985. The method itself is described in the following chart. Where $f$ is some concave function over the interval $[a,b]$. However, the first order derivative of this function is \textbf{not} defined or is complex. In order to find its maxima we do the following:
 		\begin{center}
 		\begin{tikzpicture}
@@ -269,7 +270,7 @@
 
 	\subsection{The Selection Process}
 		The selection process, as discussed before, is divided into two parts, an addition part and a reduction part. This is done once the data is filtered and once the method for maximizing Sharpe has been completed. This algorithm uses the previous methods as a way to find the most optimal portfolio given some list of stocks. It will start by first building a portfolio with one asset, and then progressively add another asset by comparing every possible portfolio that can be made from the filtered list of stocks. It will do so, until a predetermined limit of stocks is reached (for our examples, we use \verb|Portfolio_Limit|$=10$). This sort of process is what we refer to as the \textbf{Addition Method}, and can be described in the following chart:\\
-		\newpage
+
 		\begin{center}
 		\textbf{Addition Method}\par
 			\begin{tikzpicture}
@@ -307,10 +308,10 @@
 		\end{center}
 		We then reiterate the two methods (addition and reduction), until a convergence in the portfolio indexes and weights is observed through the Sharpe ratio (in practice it seems to take up to 3 iterations before a convergence is observed).
 
-\section{Tests, Code and Results}
+\section{Method Testing}
 
 	\begin{par}
-		For testing of our code we looked at how well our functions performed relative to the native matlab functions. For the selection algorithm we only used matlab as a benchmark, as there is no existing function that parallels. Please note that all the tests found here can be found in the \texttt{Mean-Value-Opt/implementation/data\_matlabazer.m} file.
+		For testing of our code we looked at how well our functions performed relative to the native matlab functions. For the selection algorithm we only used matlab as a benchmark, as there is no existing function that parallels. Please note that all the tests found here can be found in the \texttt{implementation/data\_matlabazer.m} file.
 	\end{par} \vspace{1em}
 
 	\subsection{Data}
@@ -491,62 +492,52 @@
 		Hence, our method compares well with matlab. As it provides us with a good-enough estimate for the Sharpe of the portfolio.
 	\end{par} \vspace{1em}
 
-\section{Conclusion}
-	\subsection{Analysis}
-	After the optimization process we run the model on the 2008-2012 period.
-The method involved partitioning the data into years, and then estimated
-the optimal weights of each year. Then we took those weights and applied
-them to future prices.
+\section{Analysis}
+	\subsection{Application}
+	After the filtering process we run the model on the 2008-2012 period. The method involved partitioning the data into years, and then estimating the optimal weights of each year. We then took the weights and applied them to future prices.
 
-That is, we estimated the weights \(W^T_j = [w_1,...,w_{10}]\), with
-their respected indexes \(P_j = [...]\) for year \(j\). Then applied
-them to the future market prices, where if \(M_{j+1}\) is a matrix of
-market prices of all stock prices at year \(j+1\), then our future
-prices in 2009 are \(w^T_{2008}M_{2009}(:,P_{2008})\).
+	That is, we estimated the weights \(W^T_j = [w_1,...,w_{10}]\), with their respected indexes \(P_j = [...]\) for year \(j\). Then applied them to the future market prices, where if \(M_{j}\) is a matrix of market prices of all stock prices at year \(j\), then our future portfolios performance in 2009 is computed as follows \(w^T_{2008}M_{2009}(:,P_{2008})\).
 
-The results are as follows:
-\includegraphics[width=5in]{plots-historical.png}
+	The results are as follows:
+	\begin{center}
+		\includegraphics[width=7in]{plots-historical.png}
+	\end{center}
+	As you can see, each implementation follows a similar trend. We see a clear bad optimization period for the 2009-2010 years. This is due to the fact that the weights in this time are optimized assuming the trend of the 2008 year will continue to the next year. However, 2008 had a particularly bad period for the economy, which did not last after the year ended. Hence, the period itself provided the wrong idea as for what will be seen in the future.
 
-As you can see, each implimentation follows a similar trend. We see a
-clear bad optimization period for the 2009-2010 years. This is due to
-the fact that the weights in this time are optimized assuming the trend
-of the 2008 year will continue to the next year. However, 2008 had a
-particularly bad period for the economy, which did not last after the
-year ended. Hence, the period itself provided the wrong idea as for what
-will be seen in the future.
+	The same can be said about the optimization period of 2012-2013, this period was optimized using prices from 2011-2012, which was the time when Greece defaulted, which sent a major shock to the economy. These sort of examples expose the inefficiency of MVP when it is applied to large datasets.
 
-The same can be said about the optimization period of 2012-2013, this
-period was optimized using prices from 2011-2012, which was the time
-when Greece defaulted, which sent a major shock to the economy.
+	\subsection{Discussion}
+		\subsubsection{Limitation of Sharpe and MVP}
+			\begin{itemize}
+				\item One major limitation of the Mean Variance optimization technique is that it does not account for the constant changing of the parameters. This model treats the covariances of stocks as constants when in essence they are variables. Likewise, the mean may also be shifting each period.
 
-These sort of examples expose the inefficiency of MVP when it is applied to large datasets.
+				\item Another issue with our method is that it does not account for transaction costs. Therefore, it is possible that the portfolio indicated as optimal based on our program. Is not really the optimal one, once transaction costs are factored into the equation.
+
+				\item Another related problem with MVP is that the solution can be unstable, in other words, small changes in inputs can result in huge changes in the portfolio weight. Because of this instability, a small change in the expected return can lead to entirely different portfolio weights.
+
+				\item The method seems to especially perform poorly when major market shocks are involved. As can be seen in the analysis stage, when the 2008 crash happened, the model indicated that we should take part in more shorting. However, the year after the crash the markets stabilized and large scale shorting became a poor strategy.
+
+				\item The Sharpe ratio, as theorized did encourage more stagnant assets. This is because it penalized both negative and positive volatility. While, it can prove to create a more conservative fund, it also interferes with any sort of growth.
+			\end{itemize}
+		\subsubsection{Future Study}
+			\begin{itemize}
+				\item In the future, there are a couple of areas we would like to study, that we can potentially use to revise and improve our project.One such area would be a Stop Loss method. In this method, our portfolio will be automatically re-optimized with the available data every time that the portfolio exceeds a specified level of loss. The reasoning behind this decision, is the relatively worsening performance of the portfolio as the duration since the last optimization increases. we theorize that this kind of more frequent optimization would make the portfolio more profitable.
+
+				\item We would also like to research the Black - Litterman model. The Black-Litterman model is a model used to estimate inputs for portfolio optimization. It mixes different types of estimates, some based on historical data, others based on equilibrium conditions to arrive at updated estimates. The Mixed Estimation Model was developed by Henri Theil in the early 1960's, but was applied to financial data by Fischer Black and Robert Litterman in the early 1990's.
+				
+				\item The beauty of this model is that one can blend a variety of views specified in different ways, absolute or relative, with a given prior estimate to generate a new and updated posterior estimate which includes all the views.  We feel that study this model would be a good next step at improving our project.
+
+				\item The MVP is known to be overly sensitive to estimation error in risk-return estimates and have poor out-of-sample performance characteristics. The Resampled Efficiency (RE) techniques presented in Michaud (1998) introduce Monte Carlo methods to properly represent investment information uncertainty in computing MVP portfolio optimality and in defining trading and monitoring rules.  we would like to study this technique in the future and perhaps integrate it into our program.
+			\end{itemize}
+
 	\subsection{Concluding Remarks}
-		\ \ \ Generally, the returns of the created portfolios were slowly increasing but still proved to be a worse investment then the “safe” portfolio based on the risk free rate. One of the main reasons for poor performance lies in the inherent strategy of mean variance portfolio theory. The algorithm requires constant optimization which leads to short-term success but long-term failure. Ideally, the program would require \textit{daily} optimization to ensure maximum profit. In real world applications, transaction costs, supply/demand and capital accumulation severely decrease any benefit from implementing the strategy.  In conclusion, despite modern portfolio theory’s reputation as an important advance in mathematical finance, our project has proven that is a poor model for investment strategies.
-
-\section{Discussion}
-	\subsection{Limitation of MVP in General}
-	\ \ \ One major limitation of the Mean Variance optimization technique is that it does not account for the constant changing of the parameters. This model treats the variances and covariances of stocks as constants when in essence they are variables. \\
-
-	\ \ \ Another issue with our method is that it does not account for transaction costs. Therefore, it is possible that the portfolio indicated as optimal based on a program is not really offer the optimal risk return ratio once transaction costs are factored into the equation.\\
-
-	\ \ \ Another related problem with MVP is that the solution can be unstable, in other words, small changes in inputs can result in huge changes in the portfolio weight. Because of this instability, a small change in the expected return can lead to entirely different portfolio weight. \\
-
-	\subsection{Future Study}
-	\ \ \ In the future, there are a couple of areas we would like to study, that we can potentially use to revise and improve our project.
-	One such area would be a Stop Loss method. In this method, our portfolio will be automatically re-optimized with the available data every time that the portfolio exceeds a specified level of loss. The reasoning behind this decision, is the relatively worsening performance of the portfolio as the duration since the last optimization increases. we theorize that this kind of more frequent optimization would make the portfolio more profitable.\\
-
-	\ \ \ We would also like to research the Black - Litterman model. The Black-Litterman model is a model used to estimate inputs for portfolio optimization. It mixes different types of estimates, some based on historical data, others based on equilibrium conditions to arrive at updated estimates. The Mixed Estimation Model was developed by Henri Theil in the early 1960's, but was applied to financial data by Fischer Black and Robert Litterman in the early 1990's.\\ \\
-
-	\ \ \ The beauty of this model is that one can blend a variety of views specified in different ways, absolute or relative, with a given prior estimate to generate a new and updated posterior estimate which includes all the views.  We feel that study this model would be a good next step at improving our project.\\
-
-	\ \ \ The MVP is known to be overly sensitive to estimation error in risk-return estimates and have poor out-of-sample performance characteristics. The Resampled Efficiency™ (RE) techniques presented in Michaud (1998) introduce Monte Carlo methods to properly represent investment information uncertainty in computing MVP portfolio optimality and in defining trading and monitoring rules.  we would like to study this technique in the future and perhaps integrate it into our program.\\
-
+		\ \ \ Generally, the returns of the created portfolios were slowly increasing but still proved to be a worse investment then a "safe" portfolio based on the risk free rate. One of the main reasons for poor performance lies in the inherent strategy of mean variance portfolio theory. The theorem requires the assumption of constant mean, variance and assumes that the past will predict the future perfectly. While,theoretically constant more frequent optimization (i.e. partition the data into months or weeks, rather than years) should lead to better performance, as it will force the algorithm to change the mean and variance. This sort of solution will only solve part of the problem inherit to MVP. Ideally, the program would require \textit{second-by-second} optimization to ensure best performance. In real world applications, transaction costs, supply/demand and capital accumulation severely decrease any benefit from implementing the strategy.  In conclusion, despite modern portfolio theory's reputation as an important advance in mathematical finance, our project has proven that is a poor model for investment strategies, if used without any other supplementary method.
 \newpage
 
 \section{Appendices}
 
 \newpage
-	\begin{thebibliography}{10}
+\begin{thebibliography}{10}
 	\bibitem{Paolo} Brandimarte, Paolo. ``Stock Portfolio Optimization."  \emph{Numerical Methods in Finance and Economics: A MATLAB-based Introduction}. 2nd ed. Hoboken, N.J.: Wiley Interscience, 2006. 65 - 81, 571. Print.
 
 	\bibitem{C} Corliss, George. ``Which Root Does the Bisection Algorithm Find?" \emph{SIAM Rev. SIAM Review} 19.2 (1977): 325-27. Print.
@@ -564,7 +555,6 @@ These sort of examples expose the inefficiency of MVP when it is applied to larg
 	\bibitem{Wayne} Wayne, Thorp. ``Mean Variance Optimization."  \emph{Computerized Investing}. Web. 10 Oct. 2015.
 	
 	\bibitem{Winston} Winston, Wayne L. ``Nonlinear Programming."  \emph{Operations Research: Applications and Algorithms}. 4th ed. Belmont, Calif.: Duxbury, 2003. Print.
-	
-	\end{thebibliography}
+\end{thebibliography}
 
 \end{document}
