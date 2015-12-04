@@ -27,7 +27,7 @@
 	Ariel Sosnovsky\\
 	Victoria Tran\\
 	Kosal Chhin\\
-	Yossef Bisk}
+	Yosef Bisk}
 
 \begin{document}
 
@@ -36,11 +36,11 @@
 \section{Summary}
 	\subsection{What Does Our Program Do?}
 	\ \ \ Our program allows the user to find the most optimal portfolio for a given time period using the mean-variance portfolio (MVP) optimization method. This program selects a portfolio of stocks from the global market that has minimum variance, as well as a maximized Sharpe ratio.
-
+ 
 	\subsection{How Does The Program Do It?}
-	\ \ \ The program begins by partitioning the periods of a given time to smaller intervals. It then uses Yahoo Finance to download daily stock prices of over $30,000$ stocks traded on markets around the world. The stock data is then partitioned by industry and year with respect to indicated period, after which stocks which are missing more than $30\%$ of the data are removed from a given partition. Next the program enters the filtering stage. Where the existing set of stocks is divided into pairs of stocks that have the most negative correlation with each other, and then selects the top $25\%$ of pairs. Within that subset, the program selects the individual stocks with the top $25\%$ lowest variation. The portfolio now enters the selection stage. \\ \\
-	\ \ \ The selection stage is divided into two parts, which repeat as needed. The first part, addition part, we provide the program with a set of indices of the stocks within the market. If that set is empty then the stock with the lowest variance is added initially to the portfolio. Then the selection algorithm begins in which stocks are added to the portfolio only if they increase the Sharpe Ratio of the portfolio when the weights are optimized using the Mean variance optimization method, more than any other stock. Once a particular limit of stocks is reached, the algorithm ends. \\ \\
-	\ \ \  In the second part of the selection stage, the reduction part, the program will be provided with a set of indices of stocks. The program then will create every possible combination of portfolios with one less asset in it, than originally provided. Then the portfolio with the highest Sharpe ratio is kept.  \\ \\ 
+	\ \ \ The program begins by partitioning the periods of a given time into smaller intervals. It then uses Yahoo Finance to download daily stock prices of over $30,000$ stocks traded on markets around the world. The stock data is then partitioned by industry and year with respect to indicated period, after which stocks that are missing more than $30\%$ of the data are removed from a given partition. Next the program enters the filtering stage, where the existing set of stocks is divided into pairs of stocks that have the most negative correlation with each other, and then selects the top $25\%$ of pairs. Within that subset, the program selects the individual stocks with the top $25\%$ lowest variance. The portfolio now enters the selection stage. \\ \\
+	\ \ \ The selection stage is divided into two parts, which repeat as needed. The first part, addition part, we provide the program with a set of indexes of the stocks within the market. If that set is empty then the stock with the lowest variance is added initially to the portfolio. Then the selection algorithm begins in which stocks are added to the portfolio only if they increase the Sharpe Ratio of the portfolio more than any other stock, when the weights are optimized using the Mean variance optimization method. Once a particular limit of stocks is reached, the algorithm ends. \\ \\
+	\ \ \  In the second part of the selection stage, the reduction part, the program will be provided with a set of indexes of stocks. The program then will create every possible combination of portfolios with one less asset in it, than originally provided. Then the portfolio with the highest Sharpe ratio is kept.  \\ \\ 
 	\ \ \ This stage will alternate between addition and reduction, until a convergence will occur. The resulting portfolio should be the minimum variance portfolio that offers the highest Sharpe ratio. 
 
 \section{Introduction}
@@ -80,7 +80,7 @@
 	\subsection{Data}
 		For this project, we decided to use real life financial market data aggregated from the Yahoo Finance website. It provides a more interesting result and tests the accuracy of the algorithm. We begin by describing the conditions imposed on the data before collection, our data-mining algorithm, and lastly what methods were used to deal with missing data.
 		\subsubsection{Collection}
-			Below is a list of criteria and their justification chosen to fulfil the project requirements. 
+			Below is a list of criteria and their justification chosen to fulfill the project requirements. 
 			\begin{enumerate}
 				\item Years 2008-2012
 				\begin{itemize}
@@ -89,7 +89,7 @@
 				\end{itemize}
 					\item Stock by Sector
 				\begin{itemize}
-					\item stocks were organized by the following sectors: Basic Materials, Conglomerates, Consumer Goods, Financial, Healthcare, Industrial Goods, Services, Technology, and Utilities
+					\item stocks were organized by the following sectors: Basic Materials, Conglomerates, Consumer Goods, Financial, Health-care, Industrial Goods, Services, Technology, and Utilities
 					\item this was done since the MVP algorithm would create a portfolio from each sector and then create a portfolio from those portfolios
 				\end{itemize}
 			\end{enumerate}
@@ -298,7 +298,8 @@
 
 			\end{tikzpicture}
 		\end{center}
-		We then iterate the two methods (addition and reduction), until a divergence in the portfolio indices and weights is observed through the Sharpe ratio (in practice it seems to take up to 3 itertation before a covergence is observed).
+		We then iterate the two methods (addition and reduction), until a divergence in the portfolio indexes and weights is observed through the Sharpe ratio (in practice it seems to take up to 3 itertation before a covergence is observed).
+
 \section{Tests, Code and Results}
 
 	\begin{par}
@@ -484,8 +485,7 @@
 	\end{par} \vspace{1em}
 
 \section{Conclusion}
-	our method works well for short periods of time but not so much for long periods
-	Portfolio must be optimized frequently to avoid bad losses +++ obsviously mores stuff\\
+	\ \ \ Generally, the returns of the created portfolios were slowly increasing but still proved to be a worse investment then the “safe” portfolio based on the risk free rate. One of the main reasons for poor performance lies in the inherent strategy of mean variance portfolio theory. The algorithm requires constant optimization which leads to short-term success but long-term failure. Ideally, the program would require \textit{daily} optimization to ensure maximum profit. In real world applications, transaction costs, supply/demand and capital accumulation severely decrease any benefit from implementing the strategy.  In conclusion, despite modern portfolio theory’s reputation as an important advance in mathematical finance, our project has proven that is a poor model for investment strategies.
 
 \section{Discussion}
 	\subsection{Limitation of MVP in General}
