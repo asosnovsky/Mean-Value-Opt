@@ -5,3 +5,4 @@ data_mining/time_series
 *.fdb_latexmk
 *.fls
 *.synctex.gz
+*.toc

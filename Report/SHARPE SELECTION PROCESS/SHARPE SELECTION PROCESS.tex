@@ -7,7 +7,11 @@
 	\usepackage{amssymb}
 	\usepackage{tikz}
 	\usepackage[margin=0.5in]{geometry}
+	\usepackage[style = numeric]{biblatex}
 	\usetikzlibrary{shapes.geometric, arrows}
+	\usepackage{lmodern}
+	\usepackage{ifxetex,ifluatex}
+	\usepackage{fixltx2e} % provides \textsubscript
 % Custom Colors
 	\definecolor{tabblue}{RGB}{31,119,180}
 	\definecolor{tabor}{RGB}{255,127,14}
@@ -309,7 +313,7 @@
 		For testing of our code we looked at how well our functions performed relative to the native matlab functions. For the selection algorithm we only used matlab as a benchmark, as there is no existing function that parallels. Please note that all the tests found here can be found in the \texttt{Mean-Value-Opt/implementation/data\_matlabazer.m} file.
 	\end{par} \vspace{1em}
 
-	\subsection*{Data}
+	\subsection{Data}
 
 	\begin{par}
 		We start by taking a random portion of data within our dataset, as follows:
@@ -321,7 +325,7 @@
 		Note that \texttt{sectors(6)} is arbitrary sector name chosen from our sectors list, and \texttt{dates(1)}, is simply the data from \texttt{2008-2009}. This function will take the data from the folder, filter it, and then store it in the \texttt{selData} variable. Then it will compute the returns, and covariance and store them in the \texttt{Ret} and \texttt{CoRisk} variables respectively. The variable \texttt{data} is simply the unfiltered dataset.
 	\end{par} \vspace{1em}
 
-	\subsection*{Lagrange, Variance minimization method}
+	\subsection{Lagrange, Variance minimization method}
 
 	\begin{par}
 		\textbf{Overview}:
@@ -387,7 +391,7 @@
 	\end{par} \vspace{1em}
 
 
-	\subsection*{Test Sharpe Optimization}
+	\subsection{Test Sharpe Optimization}
 
 	\begin{par}
 	The Sharpe optimization procedure we wrote, makes use of the bisection method for finding the Sharpe ratio. It is stored in the \texttt{optimizeSupreme} function. For more detail, please refer to the math-section of this paper. The matlab function we chose as the benchmark is the \texttt{estimateMaxSharpeRatio} which is a part of the \texttt{Portfolio Optimization and Asset Allocation} package in matab.
@@ -488,7 +492,36 @@
 	\end{par} \vspace{1em}
 
 \section{Conclusion}
-	\ \ \ Generally, the returns of the created portfolios were slowly increasing but still proved to be a worse investment then the “safe” portfolio based on the risk free rate. One of the main reasons for poor performance lies in the inherent strategy of mean variance portfolio theory. The algorithm requires constant optimization which leads to short-term success but long-term failure. Ideally, the program would require \textit{daily} optimization to ensure maximum profit. In real world applications, transaction costs, supply/demand and capital accumulation severely decrease any benefit from implementing the strategy.  In conclusion, despite modern portfolio theory’s reputation as an important advance in mathematical finance, our project has proven that is a poor model for investment strategies.
+	\subsection{Analysis}
+	After the optimization process we run the model on the 2008-2012 period.
+The method involved partitioning the data into years, and then estimated
+the optimal weights of each year. Then we took those weights and applied
+them to future prices.
+
+That is, we estimated the weights \(W^T_j = [w_1,...,w_{10}]\), with
+their respected indexes \(P_j = [...]\) for year \(j\). Then applied
+them to the future market prices, where if \(M_{j+1}\) is a matrix of
+market prices of all stock prices at year \(j+1\), then our future
+prices in 2009 are \(w^T_{2008}M_{2009}(:,P_{2008})\).
+
+The results are as follows:
+\includegraphics[width=5in]{plots-historical.png}
+
+As you can see, each implimentation follows a similar trend. We see a
+clear bad optimization period for the 2009-2010 years. This is due to
+the fact that the weights in this time are optimized assuming the trend
+of the 2008 year will continue to the next year. However, 2008 had a
+particularly bad period for the economy, which did not last after the
+year ended. Hence, the period itself provided the wrong idea as for what
+will be seen in the future.
+
+The same can be said about the optimization period of 2012-2013, this
+period was optimized using prices from 2011-2012, which was the time
+when Greece defaulted, which sent a major shock to the economy.
+
+These sort of examples expose the inefficiency of MVP when it is applied to large datasets.
+	\subsection{Concluding Remarks}
+		\ \ \ Generally, the returns of the created portfolios were slowly increasing but still proved to be a worse investment then the “safe” portfolio based on the risk free rate. One of the main reasons for poor performance lies in the inherent strategy of mean variance portfolio theory. The algorithm requires constant optimization which leads to short-term success but long-term failure. Ideally, the program would require \textit{daily} optimization to ensure maximum profit. In real world applications, transaction costs, supply/demand and capital accumulation severely decrease any benefit from implementing the strategy.  In conclusion, despite modern portfolio theory’s reputation as an important advance in mathematical finance, our project has proven that is a poor model for investment strategies.
 
 \section{Discussion}
 	\subsection{Limitation of MVP in General}
@@ -508,8 +541,30 @@
 
 	\ \ \ The MVP is known to be overly sensitive to estimation error in risk-return estimates and have poor out-of-sample performance characteristics. The Resampled Efficiency™ (RE) techniques presented in Michaud (1998) introduce Monte Carlo methods to properly represent investment information uncertainty in computing MVP portfolio optimality and in defining trading and monitoring rules.  we would like to study this technique in the future and perhaps integrate it into our program.\\
 
-\section{References}
+\newpage
 
 \section{Appendices}
+
+\newpage
+	\begin{thebibliography}{10}
+	\bibitem{Paolo} Brandimarte, Paolo. ``Stock Portfolio Optimization."  \emph{Numerical Methods in Finance and Economics: A MATLAB-based Introduction}. 2nd ed. Hoboken, N.J.: Wiley Interscience, 2006. 65 - 81, 571. Print.
+
+	\bibitem{C} Corliss, George. ``Which Root Does the Bisection Algorithm Find?" \emph{SIAM Rev. SIAM Review} 19.2 (1977): 325-27. Print.
+	
+	\bibitem{L} Lummer, Scott. ``Taming Your Optimizer: A Guide Through the Pitfalls of Mean-Variance Optimization." \emph{Global Asset Allocation: Techniques for Optimizing Portfolio Management}. Ed. Jess Lederman. Illustrated ed. Vol. 29. New York: Wiley, 1994. Print.
+	
+	\bibitem{Robert} Michaud, Richard O., and Robert Michaud. ``Estimation Error and Portfolio Optimization: A Resampling Solution." \emph{Journal Of Investment Management} 6.1 (2008): 8-28. Print.
+	
+	\bibitem{Pat2} Pat. ``Alpha Alignment." \emph{Portfolio Probe}. 9 July 2012. Web. 13 Oct. 2015.
+	
+	\bibitem{Pat} Pat. ``The Top 7 Portfolio Optimization Problems."  \emph{Portfolio Probe}. 5 Jan. 2012. Web. 4 Dec. 2015.
+
+	\bibitem{Jay} Walters, Jay. ``What Is the Black-Litterman Model." \emph{BlackLitterman.org}. 2013. Web. 20 Nov. 2015.
+
+	\bibitem{Wayne} Wayne, Thorp. ``Mean Variance Optimization."  \emph{Computerized Investing}. Web. 10 Oct. 2015.
+	
+	\bibitem{Winston} Winston, Wayne L. ``Nonlinear Programming."  \emph{Operations Research: Applications and Algorithms}. 4th ed. Belmont, Calif.: Duxbury, 2003. Print.
+	
+	\end{thebibliography}
 
 \end{document}
