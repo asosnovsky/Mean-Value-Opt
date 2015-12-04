@@ -1,2 +1,7 @@
 data_mining/time_series
 .DS_Store
+*.log
+*.aux
+*.fdb_latexmk
+*.fls
+*.synctex.gz
