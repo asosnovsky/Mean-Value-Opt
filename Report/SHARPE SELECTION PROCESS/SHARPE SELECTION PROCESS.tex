@@ -196,7 +196,7 @@
 			The number of variables is always equal to the number of asset $n$ + 2 (2 for the additional Lagrange multipliers we introduced). Therefore, (4) consists of $n+2$ linear equations in $n+2$ unknowns ($\mathbf{w}, \lambda_1, \lambda_2$). We can represent the system of linear equations using matrix algebra as: 
 			\begin{equation*}
 				\begin{pmatrix} 
-					2\mathbf{\Sigma} & \pmb{\mu} & \mathbf{1} \\ \mathbf{\mu^T} & 0 & 0 \\ 1^T & 0 & 0 
+					2\mathbf{\Sigma} & \pmb{\mu} & \mathbf{1} \\ \pmb{\mu^T} & 0 & 0 \\ \pmb{1^T} & 0 & 0 
 				\end{pmatrix} 
 				\begin{pmatrix}
 					\mathbf{w} \\ \lambda_1 \\ \lambda_2
@@ -214,8 +214,8 @@
 			\begin{equation*}
 				\mathbf{M} = \begin{pmatrix} 
 					2\mathbf{\Sigma} & \pmb{\mu} & \mathbf{1} \\ 
-					\mathbf{\mu^T} & 0 & 0 \\ 
-					1^T & 0 & 0 
+					\pmb{\mu^T} & 0 & 0 \\ 
+					\pmb{1^T} & 0 & 0 
 				\end{pmatrix}, 
 				\mathbf{y_w}=\begin{pmatrix}
 					\mathbf{w} \\ \lambda_1 \\ \lambda_2
@@ -493,35 +493,24 @@
 
 \section{Conclusion}
 	\subsection{Analysis}
-	After the optimization process we run the model on the 2008-2012 period.
-The method involved partitioning the data into years, and then estimated
-the optimal weights of each year. Then we took those weights and applied
-them to future prices.
+		\ \ \ After the optimization process we run the model on the 2008-2012 period. The method involved partitioning the data into years, and then estimated the optimal weights of each year. Then we took those weights and applied them to future prices. That is, we estimated the weights \(W^T_j = [w_1,...,w_{10}]\), with their respected indexes \(P_j = [...]\) for year \(j\). Then applied them to the future market prices, where if \(M_{j+1}\) is a matrix of market prices of all stock prices at year \(j+1\), then our future prices in 2009 are \(w^T_{2008}M_{2009}(:,P_{2008})\). \\
 
-That is, we estimated the weights \(W^T_j = [w_1,...,w_{10}]\), with
-their respected indexes \(P_j = [...]\) for year \(j\). Then applied
-them to the future market prices, where if \(M_{j+1}\) is a matrix of
-market prices of all stock prices at year \(j+1\), then our future
-prices in 2009 are \(w^T_{2008}M_{2009}(:,P_{2008})\).
+The results are as follows: \\
 
-The results are as follows:
-\includegraphics[width=5in]{plots-historical.png}
+\begin{figure}[h]
+	\includegraphics[width=6in]{plots-historical.png}
+	\centering
+\end{figure}
 
-As you can see, each implimentation follows a similar trend. We see a
-clear bad optimization period for the 2009-2010 years. This is due to
-the fact that the weights in this time are optimized assuming the trend
-of the 2008 year will continue to the next year. However, 2008 had a
-particularly bad period for the economy, which did not last after the
-year ended. Hence, the period itself provided the wrong idea as for what
-will be seen in the future.
+		 \ \ \ As you can see, each implimentation follows a similar trend. We see a clear bad optimization period for the 2009-2010 years. This is due to the fact that the weights in this time are optimized assuming the trend
+of the 2008 year will continue to the next year. However, 2008 had a particularly bad period for the economy, which did not last after the year ended. Hence, the period itself provided the wrong idea as for what will be seen in the future.\\
 
-The same can be said about the optimization period of 2012-2013, this
-period was optimized using prices from 2011-2012, which was the time
-when Greece defaulted, which sent a major shock to the economy.
+		\ \ \ The same can be said about the optimization period of 2012-2013, this period was optimized using prices from 2011-2012, which was the time when Greece defaulted, which sent a major shock to the economy. \\
 
-These sort of examples expose the inefficiency of MVP when it is applied to large datasets.
+		\ \ \ These sort of examples expose the inefficiency of MVP when it is applied to large datasets.
+
 	\subsection{Concluding Remarks}
-		\ \ \ Generally, the returns of the created portfolios were slowly increasing but still proved to be a worse investment then the “safe” portfolio based on the risk free rate. One of the main reasons for poor performance lies in the inherent strategy of mean variance portfolio theory. The algorithm requires constant optimization which leads to short-term success but long-term failure. Ideally, the program would require \textit{daily} optimization to ensure maximum profit. In real world applications, transaction costs, supply/demand and capital accumulation severely decrease any benefit from implementing the strategy.  In conclusion, despite modern portfolio theory’s reputation as an important advance in mathematical finance, our project has proven that is a poor model for investment strategies.
+		\ \ \ Generally, the returns of the created portfolios were slowly increasing but still proved to be a worse investment then the ``safe" portfolio based on the risk free rate. One of the main reasons for poor performance lies in the inherent strategy of mean variance portfolio theory. The algorithm requires constant optimization which leads to short-term success but long-term failure. Ideally, the program would require \textit{daily} optimization to ensure maximum profit. In real world applications, transaction costs, supply/demand and capital accumulation severely decrease any benefit from implementing the strategy.  In conclusion, despite modern portfolio theory's reputation as an important advance in mathematical finance, our project has proven that is a poor model for investment strategies.
 
 \section{Discussion}
 	\subsection{Limitation of MVP in General}
@@ -535,7 +524,7 @@ These sort of examples expose the inefficiency of MVP when it is applied to larg
 	\ \ \ In the future, there are a couple of areas we would like to study, that we can potentially use to revise and improve our project.
 	One such area would be a Stop Loss method. In this method, our portfolio will be automatically re-optimized with the available data every time that the portfolio exceeds a specified level of loss. The reasoning behind this decision, is the relatively worsening performance of the portfolio as the duration since the last optimization increases. we theorize that this kind of more frequent optimization would make the portfolio more profitable.\\
 
-	\ \ \ We would also like to research the Black - Litterman model. The Black-Litterman model is a model used to estimate inputs for portfolio optimization. It mixes different types of estimates, some based on historical data, others based on equilibrium conditions to arrive at updated estimates. The Mixed Estimation Model was developed by Henri Theil in the early 1960's, but was applied to financial data by Fischer Black and Robert Litterman in the early 1990's.\\ \\
+	\ \ \ We would also like to research the Black - Litterman model. The Black-Litterman model is a model used to estimate inputs for portfolio optimization. It mixes different types of estimates, some based on historical data, others based on equilibrium conditions to arrive at updated estimates. The Mixed Estimation Model was developed by Henri Theil in the early 1960's, but was applied to financial data by Fischer Black and Robert Litterman in the early 1990's.\\ 
 
 	\ \ \ The beauty of this model is that one can blend a variety of views specified in different ways, absolute or relative, with a given prior estimate to generate a new and updated posterior estimate which includes all the views.  We feel that study this model would be a good next step at improving our project.\\
 
