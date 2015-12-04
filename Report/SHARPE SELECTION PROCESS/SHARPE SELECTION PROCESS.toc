@@ -1,0 +1,27 @@
+\contentsline {section}{\numberline {1}Summary}{2}
+\contentsline {subsection}{\numberline {1.1}What Does Our Program Do?}{2}
+\contentsline {subsection}{\numberline {1.2}How Does The Program Do It?}{2}
+\contentsline {section}{\numberline {2}Introduction}{2}
+\contentsline {subsection}{\numberline {2.1}Objectives and Motivation}{2}
+\contentsline {subsection}{\numberline {2.2}Background}{2}
+\contentsline {subsubsection}{\numberline {2.2.1}Basics of Mean-Variance Portfolio Theory}{2}
+\contentsline {subsubsection}{\numberline {2.2.2}The Sharpe Ratio}{3}
+\contentsline {section}{\numberline {3}Methodology}{3}
+\contentsline {subsection}{\numberline {3.1}Overview}{3}
+\contentsline {subsection}{\numberline {3.2}Data}{4}
+\contentsline {subsubsection}{\numberline {3.2.1}Collection}{4}
+\contentsline {subsubsection}{\numberline {3.2.2}Mining Algorithm}{4}
+\contentsline {subsubsection}{\numberline {3.2.3}Missing Data}{4}
+\contentsline {subsection}{\numberline {3.3}Mean-Variance Portfolio Optimization}{5}
+\contentsline {subsubsection}{\numberline {3.3.1}Formulation of MVP}{5}
+\contentsline {subsubsection}{\numberline {3.3.2}Lagrange Method to Solve (3)}{6}
+\contentsline {subsection}{\numberline {3.4}Maximization of Sharpe Ratio}{7}
+\contentsline {subsection}{\numberline {3.5}Quasi-Bisection Method}{7}
+\contentsline {subsection}{\numberline {3.6}The Selection Process}{7}
+\contentsline {section}{\numberline {4}Tests, Code and Results}{8}
+\contentsline {section}{\numberline {5}Conclusion}{12}
+\contentsline {section}{\numberline {6}Discussion}{12}
+\contentsline {subsection}{\numberline {6.1}Limitation of MVP in General}{12}
+\contentsline {subsection}{\numberline {6.2}Future Study}{12}
+\contentsline {section}{\numberline {7}References}{13}
+\contentsline {section}{\numberline {8}Appendices}{13}
