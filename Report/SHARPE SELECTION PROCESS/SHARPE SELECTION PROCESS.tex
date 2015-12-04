@@ -51,7 +51,7 @@
 		\ \ \  Mean variance optimization is a theory developed by Henry Markowitz in 1952, for portfolio optimization that has been standard for creating efficient asset allocation strategies for more than half a century. The theory aims at finding the optimal set of weights that achieves a desired expected return, $\mu_p$ from the portfolio with minimal risk $\sigma^2_p$. It does so, by defining a portfolio as a weighted average of market assets, $P = \sum_{j=1}^n w_j X_j$, and then uses methods of calculus to approximate the values of $w_j$ such that the variance function, $\sigma_p^2 = \sum_{j=1}^n\sum_{i=1}^nw_jw_iCov[X_i,X_j]$ is minimized with respect to a pre-set value $\mu_p$, where $\mu_p=\sum_{i=1}^nE[X_i]$.  It has also been widely criticized by many statisticians and economics for some of the assumptions that it makes on the mean and volatility of assets. As will be shown in this paper, the underlying issues that the assumptions of the model bring, become visible when the model is applied to a complete market. However, these problems become less severe as we reduce the intervals of time and increase the number of optimization instances.\\
 
 		\subsubsection{The Sharpe Ratio}
-		\ \ \  The Sharpe Ratio, developed in 1966 by William F. Sharpe, is a method of relating the portfolio return relatively to its risk. It is defined as: $Sharpe$ = $\frac{(\mu_p - r_f)}{\sqrt{\sigma_p^2}}$, where $r_f$ is the risk free interest rate given by the market or a government.  This is a measure for calculating risk-adjusted return, that is, the expected return earned in excess of the risk free rate per unit of standard deviation. In other words, for each risk we are taking, how much expected return are we getting out of it. But one of the problems with the Sharpe Ratio is that it treats all volatility the same, and this can result in penalizing upside volatility (potential of very high returns).\\
+		\ \ \  The Sharpe Ratio, developed in 1966 by William F. Sharpe, is a method of relating the portfolio return relatively to its risk. It is defined as: $Sharpe$ = $\frac{\mu_p - r_f}{\sqrt{\sigma_p^2}}$, where $r_f$ is the risk free interest rate given by the market or a government.  This is a measure for calculating risk-adjusted return, that is, the expected return earned in excess of the risk free rate per unit of standard deviation. In other words, for the amount of risk we are taking, how much expected return are we getting out of it. But one of the problems with the Sharpe Ratio is that it treats all volatility the same, and this can result in penalizing upside volatility (potential of very high returns).\\
 
 \section{Methodology}
 	\subsection{Overview}
@@ -107,9 +107,9 @@
 				\item Different exchanges operate in different counties, thus some stocks that only operate on specific exchanges might have a lag of information due to holidays
 			\end{itemize}
 
-			To resolve the problem, stocks who only had a minimum of 70\% of data were put in the selection pool. Here 70\% of the data is defined for the stock to have 180 entries since there are typically 256 working days in a given year.\\
+			To resolve the problem, only stocks that had a minimum of 70\% of data were put in the selection pool. Here 70\% of the data is defined for the stock to have 180 entries since there are typically 256 working days in a given year.\\
 
-			For those stocks with empty entries, it was replaced with either the past day before closing price or the next day opening price depending on information available. This method is commonly used when repairing financial stock data.  
+			For those stocks with empty entries, the missing data was replaced with either the past day closing price or the next day opening price, depending on the information available. This method is commonly used when repairing financial stock data.  
 
 	\subsection{Mean-Variance Portfolio Optimization}
 		\subsubsection{Formulation of MVP}
@@ -224,7 +224,7 @@
 			\end{equation}
 			In $\mathbf{y_w}$, the first $n$ elements are the portfolio weight $\mathbf{w}$ for minimum variance. \\ \\
 
-			This minimization problem is the basis of the Markowitz's asset allocation strategies. However, we would also like to look into the Sharpe ratio for this problem. \\
+			This minimization problem is the basis of the Markowitz asset allocation strategies. However, we would also like to look into the Sharpe ratio for this problem. \\
 
 	\subsection{Maximization of Sharpe Ratio}
 		Recall the definition of the Sharpe ratio: $Sharpe$ = $\frac{(\mu_p - X_f)}{\sqrt{\sigma_p^2}}$. Therefore, we can also look at the portfolio asset allocation problem as maximization of the Sharpe ratio: 
@@ -241,7 +241,7 @@
 		To solve the maximization problem (6), we are using a \textbf{quasi-bisection method} in search for an optimal weight. See appendix for the breakdown of the bisection method.  
 
 	\subsection{Quasi-Bisection Method}
-		Since the Sharpe ratio is not a simple quadratic function, we could not apply the Lagrangian method without incurring higher level of complexity. Hence we chose to use the quasi-bisection method. Which is a modification of the original bisection method as originally suggest by Burden \& Faires 1985. The method itself is describe in the following chart. Where $f$ is some concave function over the interval $[a,b]$. However, the first order derivative of this function is \textbf{not} defined or is complex. In order to find its maxima we do the following:
+		Since the Sharpe ratio is not a simple quadratic function, we could not apply the Lagrangian method without incurring higher level of complexity. Hence we chose to use the quasi-bisection method. Which is a modification of the original bisection method as originally suggest by Burden \& Faires 1985. The method itself is described in the following chart. Where $f$ is some concave function over the interval $[a,b]$. However, the first order derivative of this function is \textbf{not} defined or is complex. In order to find its maxima we do the following:
 		\begin{center}
 		\begin{tikzpicture}
 			[node distance=5.4cm,nodes={align=center}]
@@ -258,10 +258,10 @@
 			\draw [arrow] (bc) -- (interval);
 		\end{tikzpicture}
 		\end{center}
-		As you may notice, the values of $a$ and $b$ get closer and closer every iteration. Eventually, they will converge to one another. At this point the maxima is assumed to have been achieved.
+		As you may notice, the values of $a$ and $b$ get closer and closer every iteration. Eventually, they will converge to the same point. At this point the maxima is assumed to have been achieved.
 
 	\subsection{The Selection Process}
-		The selection process as discussed before is divided into two parts, an addition part and a reduction part. This is done once the data is filtered and once the method for maximizing Sharpe has been completed. This algorithm uses the previous methods as a way to find the most optimal portfolio given some list of stocks. It will start by first building a portfolio with one asset, and then progressively add another asset by comparing every possible portfolio that can be made from the filtered list of stocks. It will do so, until a predetermined limit of stocks is reached (for our examples, we use \verb|Portfolio_Limit|$=10$). This sort of process is what we refer to as the \textbf{Addition Method}, and can describe in the following chart:\\
+		The selection process, as discussed before, is divided into two parts, an addition part and a reduction part. This is done once the data is filtered and once the method for maximizing Sharpe has been completed. This algorithm uses the previous methods as a way to find the most optimal portfolio given some list of stocks. It will start by first building a portfolio with one asset, and then progressively add another asset by comparing every possible portfolio that can be made from the filtered list of stocks. It will do so, until a predetermined limit of stocks is reached (for our examples, we use \verb|Portfolio_Limit|$=10$). This sort of process is what we refer to as the \textbf{Addition Method}, and can be described in the following chart:\\
 		\newpage
 		\begin{center}
 		\textbf{Addition Method}\par
@@ -281,7 +281,7 @@
 				\draw [arrow] (greater) -- node[anchor=south] {yes} (build);
 			\end{tikzpicture}
 		\end{center}
-		Once this stage is done, we begin to reduce assets from our list of stocks. We do this, since now that we added a number of assets we wish to check if there is a better alternative. This step is very simple, and simply requires producing a portfolio with one less asset, given every asset in the current list. This is known as the \textbf{Reduction Method}. 
+		Once this stage is done, we begin to deduct assets from our list of stocks. We do this, since now that we added a number of assets we wish to check if there is a better alternative. This step is very simple, and simply requires producing a portfolio with one less asset, given every asset in the current list. This is known as the \textbf{Reduction Method}. 
 		\begin{center}
 		\textbf{Reduction Method}\par\medskip
 			\begin{tikzpicture}
@@ -298,12 +298,12 @@
 
 			\end{tikzpicture}
 		\end{center}
-		We then iterate the two methods (addition and reduction), until a divergence in the portfolio indexes and weights is observed through the Sharpe ratio (in practice it seems to take up to 3 itertation before a covergence is observed).
+		We then reiterate the two methods (addition and reduction), until a convergence in the portfolio indexes and weights is observed through the Sharpe ratio (in practice it seems to take up to 3 iterations before a convergence is observed).
 
 \section{Tests, Code and Results}
 
 	\begin{par}
-		For testing of our code we looked at how well our functions performed relative to the native matlab functions. For the selection algorithm we only used matlab as a benchmark, as there is no exisiting function that parrellels. Please note that all the tests found here can be found in the \texttt{Mean-Value-Opt/implementation/data\_matlabazer.m} file.
+		For testing of our code we looked at how well our functions performed relative to the native matlab functions. For the selection algorithm we only used matlab as a benchmark, as there is no existing function that parallels. Please note that all the tests found here can be found in the \texttt{Mean-Value-Opt/implementation/data\_matlabazer.m} file.
 	\end{par} \vspace{1em}
 
 	\subsection*{Data}
@@ -324,7 +324,7 @@
 		\textbf{Overview}:
 	\end{par} \vspace{1em}
 	\begin{par}
-		Building on the mathematical theory we take the covariance matrix and the returns matrix and constructs the following matrices: Note that to ensure that the program does not run for too long, we control the number of assets we wish to test. If we wanted to test \textbf{all} of the assets we would set \texttt{n = length(Ret)}.
+		Building on the mathematical theory we take the covariance matrix and the returns matrix and construct the following matrices: Note that to ensure that the program does not run for too long, we control the number of assets we wish to test. If we wanted to test \textbf{all} of the assets we would set \texttt{n = length(Ret)}.
 	\end{par} \vspace{1em}
 	\begin{verbatim}n   = 100;
 		M   = Ret(1:n);
@@ -336,13 +336,13 @@
 		x = [ zeros(n,1); mp; 1 ];
 	\end{verbatim}
 	\begin{par}
-		Hence, we can obtain the solution for our wieghts as follows: \texttt{Weights = A\ensuremath{\backslash}x};
+		Hence, we can obtain the solution for our weights as follows: \texttt{Weights = A\ensuremath{\backslash}x};
 	\end{par} \vspace{1em}
 	\begin{par}
 		\textbf{Testing}:
 	\end{par} \vspace{1em}
 	\begin{par}
-		Next we will see how our function compares to the matlab base function \texttt{quadprog}. This will surve us as a benchmark for our function. The folllowing code will compare the matlab function to us.
+		Next we will see how our function compares to the matlab base function \texttt{quadprog}. This will serve us as a benchmark for our function. The following code will compare the matlab function to ours.
 	\end{par} \vspace{1em}
 	\begin{verbatim}
 		mp  = 0.05;
@@ -387,7 +387,7 @@
 	\subsection*{Test Sharpe Optimization}
 
 	\begin{par}
-	The Sharpe optimization procudure we wrote, makes use of the bisection method for finding the Sharpe ratio. It is stored in the \texttt{optimizeSupreme} function. For more detail, please refer to the math-section of this paper. The matlab function we chose as the benchmark is the \texttt{estimateMaxSharpeRatio} which is a part of the \texttt{Portfolio Optimization and Asset Allocation} package in matab.
+	The Sharpe optimization procedure we wrote, makes use of the bisection method for finding the Sharpe ratio. It is stored in the \texttt{optimizeSupreme} function. For more detail, please refer to the math-section of this paper. The matlab function we chose as the benchmark is the \texttt{estimateMaxSharpeRatio} which is a part of the \texttt{Portfolio Optimization and Asset Allocation} package in matab.
 	\end{par} \vspace{1em}
 	\begin{par}
 	We run our comparison code as follows:
@@ -432,7 +432,7 @@
 		Us Time:  Elapsed time is 0.010628 seconds.
 	\end{verbatim} \color{black}
     \begin{par}
-		As you can see, our function outperformed the matlab function by a great deal. As a matter of fact, it performs significally better with higher values of \texttt{n}. However, our Sharpe value seems to be at first glance much lower than matlab. This is beacuse we found a \textit{parrellel} portfolio to the one of matlab. To show what we mean by that, one may simply observe the ratio between the matlab weights and our weights:
+		As you can see, our function outperformed the matlab function by a great deal. As a matter of fact, it performs significantly better with higher values of \texttt{n}. However, our Sharpe value seems to be at first glance much lower than matlab. This is because we found a \textit{parallel} portfolio to the one of matlab. To show what we mean by that, one may simply observe the ratio between the matlab weights and our weights:
 	\end{par} \vspace{1em}
 	\begin{verbatim}
 		disp(WMp./Wp);
@@ -467,7 +467,7 @@
 	\end{verbatim}
 	\includegraphics [width=3.5in]{testing_01.png}\includegraphics [width=3.5in]{testing_02.png}
 	\begin{par}
-		As you can see the only difference between our method and the matlab method is a multiplier. In this case the multiplier can be computed as approximately:
+		As you can see the only difference between our method and the matlab method is a constant multiplier. In this case the multiplier can be computed as approximately:
 	\end{par} \vspace{1em}
 	\begin{verbatim}
 		approximate_multiplier = mean(WMp./Wp)
@@ -481,7 +481,7 @@
 		    0.0929
 	\end{verbatim} \color{black}
     \begin{par}
-		Hence, our method compares well with matlab. As it provides us a good-enough estimate for the Sharpe of the portfolio.
+		Hence, our method compares well with matlab. As it provides us with a good-enough estimate for the Sharpe of the portfolio.
 	\end{par} \vspace{1em}
 
 \section{Conclusion}
@@ -496,8 +496,8 @@
 	\ \ \ Another related problem with MVP is that the solution can be unstable, in other words, small changes in inputs can result in huge changes in the portfolio weight. Because of this instability, a small change in the expected return can lead to entirely different portfolio weight. \\
 
 	\subsection{Future Study}
-	\ \ \ In the future, there are a couple of area methods we would like to study, that we can potentially use to revise and improve our project
-	One such way would be a Stop Loss method. In this method, our portfolio will be automatically re-optimized with the available data every time that the portfolio exceeds a specified level of loss. The reasoning behind this decision, is the relatively worsening performance of the portfolio as the duration since the last optimization increases. we theorize that this kind of more frequent optimization would make the portfolio more profitable.\\
+	\ \ \ In the future, there are a couple of areas we would like to study, that we can potentially use to revise and improve our project.
+	One such area would be a Stop Loss method. In this method, our portfolio will be automatically re-optimized with the available data every time that the portfolio exceeds a specified level of loss. The reasoning behind this decision, is the relatively worsening performance of the portfolio as the duration since the last optimization increases. we theorize that this kind of more frequent optimization would make the portfolio more profitable.\\
 
 	\ \ \ We would also like to research the Black - Litterman model. The Black-Litterman model is a model used to estimate inputs for portfolio optimization. It mixes different types of estimates, some based on historical data, others based on equilibrium conditions to arrive at updated estimates. The Mixed Estimation Model was developed by Henri Theil in the early 1960's, but was applied to financial data by Fischer Black and Robert Litterman in the early 1990's.\\ \\
 
