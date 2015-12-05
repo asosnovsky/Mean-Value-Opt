@@ -1,0 +1,308 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>compare_to_matlab</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-12-05"><meta name="DC.source" content="compare_to_matlab.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">% (1) Main Setup (folder handling)</a></li><li><a href="#2">% (2) Select Data</a></li><li><a href="#3">(3.0) Test #0 Quadprog vs Pure Lagrange</a></li><li><a href="#4">(3.1) Test Sharpe Optimization</a></li><li><a href="#6">(3.2) Compute Optimal Portfolio</a></li></ul></div><h2>% (1) Main Setup (folder handling)<a name="1"></a></h2><pre class="codeinput">clear
+clc
+
+HomeDir = <span class="string">'F:/Mean-Value-Opt/'</span>;<span class="comment">%&lt;&lt;&lt;&lt;-----Put your home directory</span>
+cd(strcat(HomeDir,<span class="string">'implementation'</span>));
+
+<span class="comment">% Load all "background" data</span>
+[folders, dates, sectors] = dataLoc_retma(HomeDir);
+
+<span class="comment">% Inputs</span>
+RFR = [0.0365    0.0117    0.0143    0.0169    0.0100 ];<span class="comment">%Bond Rates from Stats Canada</span>
+</pre><h2>% (2) Select Data<a name="2"></a></h2><pre class="codeinput">date   = dates(ceil(rand()*length(dates)));<span class="comment">% select a random date</span>
+sector = sectors(ceil(rand()*length(sectors)));<span class="comment">% select a random sector</span>
+[ Ret, CoRisk, stockNames, selData, data  ] = data_selector( folders, date, sector );
+clc
+fprintf(<span class="string">'Loading %s Sector, from date %s-%s\n'</span>,<span class="keyword">...</span>
+    sector{:},date{:},num2str(str2num(date{:})+1));
+</pre><pre class="codeoutput">Loading Utilities Sector, from date 2012-2013
+</pre><h2>(3.0) Test #0 Quadprog vs Pure Lagrange<a name="3"></a></h2><pre class="codeinput">clear <span class="string">mp</span> <span class="string">n</span> <span class="string">S</span> <span class="string">M</span> <span class="string">w</span> <span class="string">WW</span>
+clc
+mp  = 0.05;
+n   = length(Ret);
+S   = CoRisk(1:n,1:n);
+M   = Ret(1:n);
+
+<span class="comment">% Matlab</span>
+tic
+    w = quadprog(2.*S,[],[],[],[ M ; ones(1,n)],[mp;1],<span class="keyword">...</span>
+            [],[],[],<span class="keyword">...</span>
+            optimoptions(<span class="string">'quadprog'</span>,<span class="string">'Algorithm'</span>,<span class="string">'interior-point-convex'</span>,<span class="string">'Display'</span>,<span class="string">'off'</span>));
+    fprintf(<span class="string">'Matlab Time:  '</span>);
+toc
+
+<span class="comment">% Us</span>
+tic
+    WW = [ 2*S M' ones(n,1); M 0 0 ; ones(1,n) 0 0 ]\[ zeros(n,1); mp; 1 ];
+    fprintf(<span class="string">'\nUs Time:  '</span>);
+toc
+
+<span class="comment">% Comparison</span>
+square_root_sum_of_error_squared = sqrt(sum((WW(1:end-2)-w).^2)./n)
+</pre><pre class="codeoutput">Matlab Time:  Elapsed time is 0.007771 seconds.
+
+Us Time:  Elapsed time is 0.000254 seconds.
+
+square_root_sum_of_error_squared =
+
+   2.6239e-13
+
+</pre><h2>(3.1) Test Sharpe Optimization<a name="4"></a></h2><pre class="codeinput">clear <span class="string">n</span> <span class="string">M</span> <span class="string">S</span> <span class="string">rfr</span> <span class="string">WMp</span> <span class="string">mLims</span>
+clc
+n       = 10;
+tP      = 1:n;
+M       = Ret(tP);
+S       = CoRisk(tP,tP);
+rfr     = RFR(1);
+mLims   = 1E10;
+
+<span class="comment">% Matlab</span>
+tic
+    p =  Portfolio(<span class="string">'AssetMean'</span>,M,<span class="string">'AssetCovar'</span>,S,<span class="string">'RiskFreeRate'</span>,rfr,<span class="string">'Budget'</span>,1,<span class="string">'LowerBound'</span>,-mLims,<span class="string">'UpperBound'</span>,mLims);
+    WMp = estimateMaxSharpeRatio(p);
+    Matlab_Sharpe = (M*WMp-rfr)/sqrt(WMp'*S*WMp)
+    fprintf(<span class="string">'Matlab Time:  '</span>);
+toc
+<span class="comment">% Us</span>
+tic
+    [ sharpe, Wp, ~, ~ ] = optimizeSupreme( M, S, rfr );
+    Our_Sharpe = (M*Wp-rfr)/sqrt(Wp'*S*Wp)
+    fprintf(<span class="string">'\nUs Time:  '</span>);
+toc
+
+disp(WMp./Wp);
+</pre><pre class="codeoutput">
+Matlab_Sharpe =
+
+    0.1640
+
+Matlab Time:  Elapsed time is 0.704627 seconds.
+
+Our_Sharpe =
+
+    0.0831
+
+
+Us Time:  Elapsed time is 0.105043 seconds.
+   1.0e+08 *
+
+    5.1833
+    5.4998
+    6.1384
+    6.0368
+    6.0799
+    6.0158
+    6.2137
+    6.4974
+    6.1046
+    5.9567
+
+</pre><p>Plots</p><pre class="codeinput">figure(<span class="string">'Name'</span>,<span class="string">'Our Optimization'</span>);
+    plot(Wp'*selData(:,1:n)');
+    title(<span class="string">'Our Function'</span>);
+    xlabel(<span class="string">'Time'</span>);
+    ylabel(<span class="string">'Value of Portfolio'</span>);
+figure(<span class="string">'Name'</span>,<span class="string">'Matlab Optimization'</span>);
+    plot(WMp'*selData(:,1:n)');
+    xlabel(<span class="string">'Time'</span>);
+    ylabel(<span class="string">'Value of Portfolio'</span>);
+    title(<span class="string">'Matlab'</span>);
+</pre><img vspace="5" hspace="5" src="compare_to_matlab_01.png" alt=""> <img vspace="5" hspace="5" src="compare_to_matlab_02.png" alt=""> <h2>(3.2) Compute Optimal Portfolio<a name="6"></a></h2><pre class="codeinput">clc
+n               = 20;
+PortfolioLimit  = 10;
+tic
+    [ WpL, P, sharpe ] = optimizeSelect( Ret(1:n), CoRisk(1:n,1:n), RFR(1), PortfolioLimit )
+toc
+figure(<span class="string">'Name'</span>,sprintf(<span class="string">'Optimal %d Asset Portfolio'</span>, PortfolioLimit));
+plot(WpL'*selData(:,P)');
+</pre><pre class="codeoutput">
+WpL =
+
+    7.7807
+   -3.5085
+    7.5016
+   -5.1812
+    3.3386
+    5.4050
+    4.1486
+  -10.3480
+   -4.9925
+   -3.1442
+
+
+P =
+
+     4     5     6     9    10    11    13    15    20     7
+
+
+sharpe =
+
+    0.1301
+
+Elapsed time is 3.526551 seconds.
+</pre><img vspace="5" hspace="5" src="compare_to_matlab_03.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% % (1) Main Setup (folder handling)
+clear
+clc
+
+HomeDir = 'F:/Mean-Value-Opt/';%<<<<REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-Put your home directory
+cd(strcat(HomeDir,'implementation'));
+
+% Load all "background" data
+[folders, dates, sectors] = dataLoc_retma(HomeDir);
+
+% Inputs
+RFR = [0.0365    0.0117    0.0143    0.0169    0.0100 ];%Bond Rates from Stats Canada
+
+
+%% % (2) Select Data
+date   = dates(ceil(rand()*length(dates)));% select a random date
+sector = sectors(ceil(rand()*length(sectors)));% select a random sector
+[ Ret, CoRisk, stockNames, selData, data  ] = data_selector( folders, date, sector );
+clc
+fprintf('Loading %s Sector, from date %s-%s\n',...
+    sector{:},date{:},num2str(str2num(date{:})+1));
+%% (3.0) Test #0 Quadprog vs Pure Lagrange
+clear mp n S M w WW
+clc
+mp  = 0.05;
+n   = length(Ret);
+S   = CoRisk(1:n,1:n);
+M   = Ret(1:n);
+
+% Matlab
+tic
+    w = quadprog(2.*S,[],[],[],[ M ; ones(1,n)],[mp;1],...
+            [],[],[],...
+            optimoptions('quadprog','Algorithm','interior-point-convex','Display','off'));
+    fprintf('Matlab Time:  ');
+toc
+
+% Us
+tic
+    WW = [ 2*S M' ones(n,1); M 0 0 ; ones(1,n) 0 0 ]\[ zeros(n,1); mp; 1 ];
+    fprintf('\nUs Time:  ');
+toc
+
+% Comparison
+square_root_sum_of_error_squared = sqrt(sum((WW(1:end-2)-w).^2)./n)
+%% (3.1) Test Sharpe Optimization
+clear n M S rfr WMp mLims
+clc
+n       = 10;
+tP      = 1:n;
+M       = Ret(tP);
+S       = CoRisk(tP,tP);
+rfr     = RFR(1);
+mLims   = 1E10;
+
+% Matlab
+tic
+    p =  Portfolio('AssetMean',M,'AssetCovar',S,'RiskFreeRate',rfr,'Budget',1,'LowerBound',-mLims,'UpperBound',mLims);
+    WMp = estimateMaxSharpeRatio(p);
+    Matlab_Sharpe = (M*WMp-rfr)/sqrt(WMp'*S*WMp)
+    fprintf('Matlab Time:  ');
+toc 
+% Us
+tic
+    [ sharpe, Wp, ~, ~ ] = optimizeSupreme( M, S, rfr );
+    Our_Sharpe = (M*Wp-rfr)/sqrt(Wp'*S*Wp)
+    fprintf('\nUs Time:  ');
+toc
+
+disp(WMp./Wp);
+
+%%
+% Plots
+figure('Name','Our Optimization');
+    plot(Wp'*selData(:,1:n)');
+    title('Our Function');
+    xlabel('Time');
+    ylabel('Value of Portfolio');
+figure('Name','Matlab Optimization'); 
+    plot(WMp'*selData(:,1:n)');
+    xlabel('Time');
+    ylabel('Value of Portfolio');
+    title('Matlab');
+
+%% (3.2) Compute Optimal Portfolio
+clc
+n               = 20;
+PortfolioLimit  = 10;
+tic
+    [ WpL, P, sharpe ] = optimizeSelect( Ret(1:n), CoRisk(1:n,1:n), RFR(1), PortfolioLimit )
+toc
+figure('Name',sprintf('Optimal %d Asset Portfolio', PortfolioLimit));
+plot(WpL'*selData(:,P)');
+
+##### SOURCE END #####
+--></body></html>

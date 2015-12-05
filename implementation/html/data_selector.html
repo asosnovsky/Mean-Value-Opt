@@ -1,0 +1,200 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>data_selector</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-12-05"><meta name="DC.source" content="data_selector.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> [ Ret, CoRisk, fStocknames, filData, data, stockNames, P, returns  ] = data_selector( folders, date, sector )
+<span class="comment">%data_selector This function will select a given partition given a sector,</span>
+<span class="comment">%date and folder object. Then will filter that data based on variance and</span>
+<span class="comment">%correlation.</span>
+<span class="comment">%</span>
+<span class="comment">%   [Inputs/Outpus]</span>
+<span class="comment">%   folders         a `structure` that contains the field `data` as the real location of data</span>
+<span class="comment">%   date            a `string`-cell that contains the requested date,</span>
+<span class="comment">%   sector          a `string`-cell that contains the requested sector</span>
+<span class="comment">%   Ret             a `vector` of the means of the selected data</span>
+<span class="comment">%   CoRisk          a covariance `matrix` for the selected data</span>
+<span class="comment">%   fStocknames     a `cell` with the names of all the fitered stocks</span>
+<span class="comment">%   fillData        a `matrix` with all the filtered data</span>
+<span class="comment">%   data            a `matrix` with the unfiltered data</span>
+<span class="comment">%   stockNames      a `cell` with the names of the unfiltered stocks</span>
+<span class="comment">%   P               a `vector` with the indexes of the filtered stocks inside the unfilterd `data`</span>
+<span class="comment">%   returns         a `matrix` with the returns of the filtered data</span>
+<span class="comment">%</span>
+<span class="comment">%</span>
+
+    <span class="comment">% (0) Folder Location</span>
+    folders.tmp = strcat(folders.data, date, <span class="string">'/'</span>,sector,<span class="string">'.csv'</span>);
+    fulldataset = importdata(char(folders.tmp));
+    stockNames = regexprep(strrep(fulldataset.textdata(1,:),<span class="string">'Close.'</span>,<span class="string">''</span>),<span class="string">'["|.]'</span>,<span class="string">''</span>);
+    stockNames = stockNames(2:end);
+    data = fulldataset.data;
+
+    <span class="comment">% (1) Compute returns</span>
+    data(data == 0) = 1E-20;
+    returns = (data(2:end,:)-data(1:end-1,:))./data(1:end-1,:);
+    Ret = mean(returns);
+    CoRisk = cov(returns);
+
+    <span class="comment">% (2) Data Reduction</span>
+    <span class="comment">% (2.1) by correlation</span>
+    temp = (sort(diag(CoRisk)));
+    temp = temp(1:floor(0.5*length(Ret)));
+    P = [];
+    <span class="keyword">for</span> (pot=temp')
+        [xx, ~] = find(diag(CoRisk) == pot);
+        P = [P xx'];
+    <span class="keyword">end</span>
+    P = unique(P);
+
+    <span class="comment">% (2.2) by variance</span>
+    temp = sort(reshape(CoRisk(P,P),[1,numel(P)^2]));
+    temp = temp(1:floor(0.5*length(P)));
+
+    P = [];
+    <span class="keyword">for</span> (pot=temp)
+        [xx, ~] = find(CoRisk == pot);
+        P = [P xx'];
+    <span class="keyword">end</span>
+    P = unique(P);
+
+    <span class="comment">% Saving of fileterd data</span>
+    filData = data(:,P);
+    returns = returns(:,P);
+    Ret     = Ret(P);
+    CoRisk = CoRisk(P,P);
+    fStocknames = stockNames(P);
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Error using data_selector (line 22)
+Not enough input arguments.
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [ Ret, CoRisk, fStocknames, filData, data, stockNames, P, returns  ] = data_selector( folders, date, sector )
+%data_selector This function will select a given partition given a sector,
+%date and folder object. Then will filter that data based on variance and
+%correlation.
+%
+%   [Inputs/Outpus]
+%   folders         a `structure` that contains the field `data` as the real location of data
+%   date            a `string`-cell that contains the requested date, 
+%   sector          a `string`-cell that contains the requested sector
+%   Ret             a `vector` of the means of the selected data
+%   CoRisk          a covariance `matrix` for the selected data
+%   fStocknames     a `cell` with the names of all the fitered stocks
+%   fillData        a `matrix` with all the filtered data
+%   data            a `matrix` with the unfiltered data
+%   stockNames      a `cell` with the names of the unfiltered stocks
+%   P               a `vector` with the indexes of the filtered stocks inside the unfilterd `data`
+%   returns         a `matrix` with the returns of the filtered data
+%
+%
+
+    % (0) Folder Location
+    folders.tmp = strcat(folders.data, date, '/',sector,'.csv');
+    fulldataset = importdata(char(folders.tmp));
+    stockNames = regexprep(strrep(fulldataset.textdata(1,:),'Close.',''),'["|.]','');
+    stockNames = stockNames(2:end);
+    data = fulldataset.data;
+
+    % (1) Compute returns
+    data(data == 0) = 1E-20;
+    returns = (data(2:end,:)-data(1:end-1,:))./data(1:end-1,:);
+    Ret = mean(returns);
+    CoRisk = cov(returns);
+
+    % (2) Data Reduction
+    % (2.1) by correlation
+    temp = (sort(diag(CoRisk)));
+    temp = temp(1:floor(0.5*length(Ret)));
+    P = [];
+    for (pot=temp')
+        [xx, ~] = find(diag(CoRisk) == pot);
+        P = [P xx'];
+    end
+    P = unique(P);
+    
+    % (2.2) by variance
+    temp = sort(reshape(CoRisk(P,P),[1,numel(P)^2]));
+    temp = temp(1:floor(0.5*length(P)));
+
+    P = [];
+    for (pot=temp)
+        [xx, ~] = find(CoRisk == pot);
+        P = [P xx'];
+    end
+    P = unique(P);
+    
+    % Saving of fileterd data
+    filData = data(:,P);
+    returns = returns(:,P);
+    Ret     = Ret(P);
+    CoRisk = CoRisk(P,P);
+    fStocknames = stockNames(P);
+end
+
+
+##### SOURCE END #####
+--></body></html>

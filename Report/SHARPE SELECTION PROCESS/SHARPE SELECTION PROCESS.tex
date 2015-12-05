@@ -12,6 +12,7 @@
 	\usepackage{lmodern}
 	\usepackage{ifxetex,ifluatex}
 	\usepackage{fixltx2e} % provides \textsubscript
+	\usepackage{forest}
 % Custom Colors
 	\definecolor{tabblue}{RGB}{31,119,180}
 	\definecolor{tabor}{RGB}{255,127,14}
@@ -535,7 +536,500 @@
 \newpage
 
 \section{Appendices}
+	\subsection{Data Retrieval}
+	|R Code|, for the purpose of this section, we decided to use \verb|R| in order to pull data from \verb|yahoo-finance|, as it was a more convenient tool for data cleaning and web-scrapping.\\
+	\\
+		\subsubsection{Web scrapping}
+			First we had to scrap yahoo for its links and sector-titles.
+			\begin{verbatim}
+				# Load packages and clean variables
+				rm(list = ls())
+				library(httr)
+				library(rvest)
+				library(magrittr)
 
+				# Start an html session
+				   yahoo <- html_session("http://biz.yahoo.com/p/")
+				# Analyze html table
+				   sector_html <- yahoo %>%
+					 html_nodes(xpath = "//td//td//a/@href") %>%
+					 html_text()
+					 sector_html_titles <- yahoo %>%
+					 html_nodes("td td a font") %>%
+					   html_text()
+				# Save all of the html links for later use   
+				   write.csv(gsub("[\r\n]", "",sector_html_titles),file = "sector_html_titles.csv",row.names = FALSE)
+				   base <- "http://biz.yahoo.com/p/"
+				   html_pages <- paste(base,sector_html,sep = "")
+				   write.csv(html_pages,file = "html_links/sector_html.csv",row.names = FALSE)
+
+				# Get the sector list and store it into a csv file   
+				  yahoo_industry <- html_session(html_pages[1])
+				  industry_html <- yahoo_industry %>%
+				    html_nodes(xpath = "//td//td//a[contains(@href,'conameu')]/@href") %>%
+				    html_text()
+				  titles_text <- paste("html_links/",gsub("[\r\n]", "",sector_html_titles),".csv",sep = "")
+				  for (i in 1:length(html_pages))
+				  {
+				    yahoo_industry <- html_session(html_pages[i])
+				    industry_html <- yahoo_industry %>%
+				      html_nodes(xpath = "//td//td//a[contains(@href,'conameu')]/@href") %>%
+				      html_text()
+				    for (j in 1:length(industry_html))
+				    {
+				      sector_html_url <- paste(base,industry_html,sep = "")
+				      yahoo_industry_stock <- html_session(sector_html_url[j])
+				      industry_stock_html <- yahoo_industry_stock %>%
+				       html_nodes("td td a+ a") %>%
+				       html_text()
+				      write.table(industry_stock_html, file = titles_text[i],append = "TRUE",sep = ",",row.names = FALSE)
+				    
+				    }
+				  }
+			\end{verbatim}
+		\subsubsection{Filter}
+			Between this step and the last step, we downloaded all the data using a simple loop, and store it in a folder hierarchy, where they were divided by sector. We omitted that process as it was not relevant to the theory. \\
+			\\
+			In this section, we take the downloaded data, partition it, and then filter it, to ensure complete case per partition. Please note that this process took around 4hrs.
+			\begin{verbatim}
+				rm(list=ls())
+				require(chron)
+				require(dplyr)
+				require(timeSeries)
+				require(zoo)
+
+				# Helper function that will generate only working days
+				getDateVector <- function(d1,d2,format="%Y%m%d") {
+				  dates <-seq.Date(to = as.Date(d2,format=format),
+				                   from = as.Date(d1,format=format),
+				                   by = 1)
+				  return(as.Date(dates[!is.weekend(dates)]))
+				}
+
+				# get sector titles
+				sector_html_titles <- gsub("[\r\n]", "", read.csv(file = "sector_html_titles.csv")$x);
+
+				partitions_year = rbind(c("20080101","20081231"),
+				                        c("20090101","20091231"),
+				                        c("20100101","20101231"),
+				                        c("20110101","20111231"),
+				                        c("20120101","20121231"))
+				# loop through every sector
+				for (sect in 6:length(sector_html_titles))
+				{
+				  sector = sector_html_titles[sect];
+				  stock_dir <- paste0("/run/media/ari/data-600-ntfs/data/data/time_series/2008-2012/",sector)
+				  stock_list <- gsub(".csv","",dir(stock_dir))
+				  # Create a directory
+				  dir.create("filtered_stocks/",showWarnings = FALSE)
+				    # loop through every partition
+				    for(part in 1:length(partitions_year[,1]))
+				    {
+				      # create general date vector
+				      merged_data <- data.frame(Index=getDateVector(partitions_year[part,1],partitions_year[part,2]))
+				      year <- substr(partitions_year[part,1],1,4)
+				      
+				      #create directory name data/filtered_stocks/YEAR
+				      merged_data_directory <- paste0("filtered_stocks/",year)
+				      dir.create(merged_data_directory,showWarnings = FALSE)
+				      
+				      #create file name data/filtered_stocks/YEAR/SECTOR.csv
+				      merged_data_file <- paste0(merged_data_directory,"/",sector,".csv")
+				      
+				      # loop through each stock
+				      for (stock in stock_list)
+				      {
+				        # Load stock data
+				        data <- read.csv(paste0(stock_dir,"/",stock,".csv"))
+				        data[,1] <- as.Date(data[,1]);
+				        # filter data by year
+				        data_year <- dplyr::filter(data,grepl(year,Index))
+				        
+				        # coerce index to date and close prices to numeric
+				        data_year$Index <- as.Date(data_year$Index)
+				        data_year$Close <- as.numeric(data_year$Close)
+				        
+				        # rename col.names to specific stock
+				        data_year_short <- data_year[c("Index","Close")]
+				        colnames(data_year_short) <- c("Index",paste0("Close.",stock))
+				        
+				        #if the stock has more than 85% of time data we keep it
+				        if (nrow(data_year) > nrow(merged_data)*.85) 
+				        {
+				          merged_data <- merge(merged_data,data_year_short,by.x = "Index",by.y = "Index",all.x = TRUE)
+				          # determine if last column of merged_data had NA values if so replace with previous open price. 
+				          
+				          last.na = 0;
+				          # If there is still holes in that data complete it with other open/close price
+				          for (naInd in which(is.na(merged_data[,ncol(merged_data)])) ) {
+				            possibs = which(data[,1] < merged_data[naInd,1]);
+				            if( length(possibs) > 0 ) {
+				              merged_data[naInd,ncol(merged_data)] = data[max(possibs),4];
+				            } else {
+				              merged_data[naInd,ncol(merged_data)] = data[min(which(data[,1] >= merged_data[naInd,1])),2];
+				            }
+				          }
+				          
+				        }
+				        # Print completion
+				        print(paste0(round(which(stock_list == stock)/length(stock_list)*100,2),'% Done, [', ncol(merged_data),'/',length(stock_list),'] year: ', year, ' sector: ', sector ));
+				      }
+				      # save
+				      write.csv(merged_data,file = merged_data_file,row.names = FALSE);
+				    }
+				}
+			\end{verbatim}
+
+	\subsection{Data Selector}
+		|Matlab Code|: This function is ran after the data has been scrapped from yahoo
+		\begin{verbatim}
+			function [ Ret, CoRisk, fStocknames, filData, data, stockNames, P, returns  ] = ...
+			                data_selector( folders, date, sector )
+			%data_selector This function will select a given partition given a sector,
+			%date and folder object. Then will filter that data based on variance and
+			%correlation.
+			%
+			%   [Inputs/Outpus]
+			%   folders         a `structure` that contains the field `data` as 
+			the real location of data
+			%   date            a `string`-cell that contains the requested date,
+			%   sector          a `string`-cell that contains the requested sector
+			%   Ret             a `vector` of the means of the selected data
+			%   CoRisk          a covariance `matrix` for the selected data
+			%   fStocknames     a `cell` with the names of all the fitered stocks
+			%   fillData        a `matrix` with all the filtered data
+			%   data            a `matrix` with the unfiltered data
+			%   stockNames      a `cell` with the names of the unfiltered stocks
+			%   P               a `vector` with the indexes of the filtered 
+			stocks inside the unfilterd `data`
+			%   returns         a `matrix` with the returns of the filtered data
+			%
+			%
+
+			    % (0) Folder Location
+			    folders.tmp = strcat(folders.data, date, '/',sector,'.csv');
+			    fulldataset = importdata(char(folders.tmp));
+			    stockNames = regexprep(strrep(fulldataset.textdata(1,:),'Close.',''),'["|.]','');
+			    stockNames = stockNames(2:end);
+			    data = fulldataset.data;
+
+			    % (1) Compute returns
+			    data(data == 0) = 1E-20;
+			    returns = (data(2:end,:)-data(1:end-1,:))./data(1:end-1,:);
+			    Ret = mean(returns);
+			    CoRisk = cov(returns);
+
+			    % (2) Data Reduction
+			    % (2.1) by correlation
+			    temp = (sort(diag(CoRisk)));
+			    temp = temp(1:floor(0.5*length(Ret)));
+			    P = [];
+			    for (pot=temp')
+			        [xx, ~] = find(diag(CoRisk) == pot);
+			        P = [P xx'];
+			    end
+			    P = unique(P);
+
+			    % (2.2) by variance
+			    temp = sort(reshape(CoRisk(P,P),[1,numel(P)^2]));
+			    temp = temp(1:floor(0.5*length(P)));
+
+			    P = [];
+			    for (pot=temp)
+			        [xx, ~] = find(CoRisk == pot);
+			        P = [P xx'];
+			    end
+			    P = unique(P);
+
+			    % Saving of fileterd data
+			    filData = data(:,P);
+			    returns = returns(:,P);
+			    Ret     = Ret(P);
+			    CoRisk = CoRisk(P,P);
+			    fStocknames = stockNames(P);
+			end
+		\end{verbatim}
+
+	\subsection{Bisection Method for Sharpe}
+		|Matlab Code|: This function will run the bisection method, until a maximized Sharpe ratio will occur.
+		\begin{verbatim}
+			function [ sharpe, Wp, sharpes, Wps ] = optimizeSupreme( M, S, rfr )
+			%optimizeSupreme finds the most optimal sharpe value using the bisection
+			%method.
+			%   [Input/Output]
+			%   `M`         a `vector` with the means of all the assets
+			%   `S`         the Covariance `matrix` for all the assets
+			%   `rfr`       a `double` with the risk-free-rate
+			%   `sharpe`    a `double` containing the most optimal sharpe
+			%   `Wp`        a `vector` with the most optimal weights
+			%   `sharpes`   a `vector` with all attempted sharpes (can be 
+			used to generate an efficiency frontier)
+			%   `Wps`       a `vector` with all attempted weights
+			%
+			%
+
+			% Globals to this function
+			M = M -rfr;
+			% Note, E[P] - rfr = E[w_1*X_1+w_2*X_2] - rfr*(w_1+w_2) = E[w_1(X_1-rfr)+w_2(X_2-rfr)]
+			n = length(M);
+
+			% this function will compute the sharpe ratio for us
+			sharpe = @(w) (M*w)/sqrt(w'*S*w);
+
+			% optimo is the lagrangian method, will take a fixed return `mp` and return
+			% optimal weights
+			function w = optimo(mp)
+			    % Optimize weights
+			     w = [ 2*S M' ones(n,1); M 0 0 ; ones(1,n) 0 0 ]\[ zeros(n,1); mp; 1 ];
+			     w = w(1:end-2);% this will get rid of the `lambda` values
+			end
+
+			% Containers
+			Wps = zeros(1,n);
+			sharpes = [Inf 0];
+
+			% Variables
+			% initial limit, abs is taken in case of negative returns. 
+			% This way shorting will not be penalized
+			limmp = [max([min(abs(M)) rfr]) max(abs(M))];
+			c = 2;% initial starting point
+			m0 = limmp(1);
+			mk = limmp(2);
+			while (abs(diff(limmp))> 1E-200 && c < 500)
+			    %disp(sharpes);
+			    ud = [ mk<m0 mk>m0 ];%if mk > m0 then limmp([0 1])= max else limmp([1 0])= min 
+			    %^ this is done, in case negative values are enetered and the
+			    % max, min are not in any given order
+			    m0 = median(limmp);% compute first median [----*----]
+			    mk = median([m0 limmp(ud)]);% compute second median [--*--|----]
+
+			    Wp = optimo(m0);% find optimal weights
+			    sharpes(c) = sharpe(Wp);% store them
+
+			    Wp = optimo(mk);% compute the next optimal weights
+			    sharpes(c+1) = sharpe(Wp);% store them
+
+			    Wps(c,:) = Wp;% save weights
+
+			    % Test
+			    if(sharpes(c+1) < sharpes(c))
+			        limmp(ud) = mk;
+			    else
+			        limmp(~ud) = m0;
+			    end
+			    c = c+1;
+			end
+			    % store resultig sharpe
+			    sharpe = sharpes(end);
+			end
+		\end{verbatim}
+
+	\subsection{Selection Algorithm}
+		|Matlab Code|: This function will run the addition and reduction methods on a sector, until an optimal portfolio gets chosen, with a maximized sharpe return.
+		\begin{verbatim}
+			function [ Wp, P, sharpe ] = optimizeSelect( Ret, CoRisk, rfr, portlim )
+			%optimizeSelect builds the most optimal portfolio, given a limit, a
+			%risk-free-rate, and the Covariance matrix and vector mean.
+			%   [Inputs/Outputs]
+			%   `Ret`       a `vector` of the means of a given market
+			%   `CoRisk`    the Covariance `matrix` of a given market
+			%   `rfr`       a `double` containing the risk free rate
+			%   `portlim`   a `double` containing the limit for this portfolio
+			%   `Wp`        a `vector` contating the final selected weights
+			%   `P`         a `vector` containing the final selected indexes of the given assests
+			%   `sharpe`   a `double` containing the sharpe ratio
+			%
+
+			% Initialize algorothimn
+			[~,P]   = min(diag(CoRisk));
+			Wp      = [1];
+			sharpe  = 0;
+
+			% Helpers
+
+			% function addPort, will add assets to the portfolio,
+			% untill a limit is reached
+			function addPort()
+			    %Begin by generating a loop equalling the total number of empty "spots"
+			    for repNum = 1:portlim-length(P)
+			        % Generated a list of Unselected assets
+			        Unsel = setdiff(1:length(Ret),P);
+
+			        % Set local variables
+			        fSha  = 0;
+			        fID   = [];
+			        fW    = Wp;
+
+			        % For every unselected asset
+			        c = 0;
+			        for assID = Unsel
+			            c = c+1;
+			            % Get the Expected Returns
+			            M = Ret([P assID]);
+			            % Get Covariance Matrix and count the current number of assets
+			            S = CoRisk([P assID],[P assID]);
+			            % Computing Sharpe
+			            [ s, w ] = optimizeSupreme( M, S, rfr );
+			            % Determine if Portfolio is optimal
+			            if (~isempty(w) && s(end) > fSha)
+			                fID     = assID;
+			                fSha    = s(end);
+			                fW      = w;
+			            end
+			        end
+			        % save results
+			        P       = [P fID];
+			        Wp      = fW;
+			        sharpe  = fSha;
+			    end
+			end
+
+			% fucntion redPort will generate all potential portfolios containing one
+			% less asset, and then select the one with the highest sharpe.
+			function redPort()
+			    % Initialize local variables
+			    fSha    = 0;
+			    fIDs    = P;
+			    fW      = Wp;
+			    % run loop on every selected index
+			    for portID = P
+			        % Get a reduced list ( a list without the currently selected asset)
+			        redList = setdiff(P,portID);
+			        % check in case empty
+			        if(~isempty(redList))
+			            % Get variables
+			            M   = Ret(redList);
+			            S   = CoRisk(redList,redList);
+
+			            % Computing Sharpe
+			            [ s, w ] = optimizeSupreme( M, S, rfr );
+
+			            % Determine if Portfolio is optimal
+			            if (~isempty(w) && s(end) > fSha)
+			                fSha    = s(end);
+			                fIDs    = redList;
+			                fW      = w;
+			                sharpes = [s; fSha];
+			            end
+			        end
+			    end
+			    % Set the selected Portfolio as our current
+			    P       = fIDs;
+			    Wp      = fW;
+			    sharpe  = fSha;
+			end
+
+			% Run initial addition
+			addPort();
+
+			% initialize watchers
+			lSharpe = 0;
+			% run loop until a divergence occurs
+			while abs(lSharpe-sharpe) > 1E-10
+			    lSharpe = sharpe;
+			    redPort();
+			    addPort();
+			end
+
+			end
+		\end{verbatim}
+
+	\subsection{Final Analysis}
+		|Matlab Code|: This is the code that we ran, when we generated the plots in section (5.1). This code uses the previous \verb|matlab| functions to generate optimal weights, store the names of selected stocks and then generate the price of our portfolio in for every upcoming year.\\
+		\\
+		Please note that the variables \verb|sectors|, \verb|dates| and \verb|folders| were generated by a function which was omitted from this report. We also omitted the explanation behind how |findlocSubstrings|, as it was not relevant.\\
+		\begin{enumerate}
+			\item \verb|sectors|, is a cell containing strings, with the names of each sector.
+			\item \verb|dates|, is a cell containing strings, with the dates of each partition
+			\item \verb|folders|, is an object containing strings with all the needed folders
+			\item \verb|findlocSubstrings|, is a function that will find all unique strings that are in one list, and will return their indexes. 
+		\end{enumerate}
+		Please note that this function took around 30min to run, and so we added a lot of |display| functions in different fields.
+		\begin{verbatim}
+			% Inputs
+			RFR = [0.0365    0.0117    0.0143    0.0169    0.0100 ];
+			PortfolioLimit = 10;
+
+			%% (2) Analysis
+			clc
+			% loop on every sector
+			for sector = sectors
+			    disp(sector);
+			    % Start analyzing the first year (2008)
+				    DATA = [1000];
+				    date = dates(1);%2008
+			    % Get Data
+				    [ Ret, CoRisk, fstockNames, Fdata, Odata  ] = data_selector( folders, date, sector );
+			    % Optimize
+				    [ Wp, P ] = optimizeSelect( Ret, CoRisk, RFR(1), PortfolioLimit );
+			    % Store
+				    tmpData = struct('Wp',Wp,'P',P,'optPlot',Wp'*Fdata(:,P)');
+				    tmpData.stockNames = cellstr(fstockNames(P));
+				    tmpData.original = Odata;
+				    data.(char(strcat('y',date))).(char(strrep(sector,' ','_'))) = tmpData;
+			    % Loop on all next years
+			    for date=dates(2:end)
+			        % Get Data
+			           [ Ret, CoRisk, fstockNames, Fdata, ~, stockNames, ~,returns  ] =...
+			           	       data_selector( folders, date, sector );
+			        % Apply Past Prices
+			           [foundP, foundI] = findlocSubstrings(stockNames, tmpData.stockNames);
+			           DATA = [DATA (DATA(end)+cumsum(Wp(foundI)'*returns(:,foundP)'))];
+			        % Optimize
+			           [ Wp, P ] = optimizeSelect( Ret, CoRisk, RFR(1), PortfolioLimit );
+			        % Store
+			           tmpData = struct('Wp',Wp,'P',P,'optPlot',Wp'*Fdata(:,P)');
+				       tmpData.original = Odata;
+				       tmpData.stockNames = cellstr(fstockNames(P));
+				       data.(char(strcat('y',date))).(char(strrep(sector,' ','_'))) = tmpData;
+			    end
+			end
+		\end{verbatim}
+		This ultimately creates a \verb|structure| called \verb|data|. This structure will look as follows:
+		\begin{center}
+		\begin{forest}
+			for tree={
+			font=\ttfamily,
+			grow'=0,
+			child anchor=west,
+			parent anchor=south,
+			anchor=west,
+			calign=first,
+			edge path={
+			\noexpand\path [draw, \forestoption{edge}]
+			(!u.south west) +(7.5pt,0) |- node[fill,inner sep=1.25pt] {} (.child anchor)\forestoption{edge label};
+			},
+			before typesetting nodes={
+			if n=1
+			{insert before={[,phantom]}}
+			{}
+			},
+			fit=band,
+			before computing xy={l=15pt},
+			}
+			[
+				y2008
+					[
+						sectorName
+						[Wp: 10x1 double]
+					    [P: 10x1 double]
+					    [optPlot: 1x262 double]
+					    [stockNames: 1x10 cell]
+					    [original: 262x1992 double]
+					]
+				y2009
+					[
+						sectorName
+						[Wp: 10x1 double]
+					    [P: 10x1 double]
+					    [optPlot: 1x262 double]
+					    [stockNames: 1x10 cell]
+					    [original: 262x1992 double]
+					]
+			]
+		\end{forest}
+		\end{center}
+		The years are obviously going to be $2008-2012$, this is not an exhaustive list. Also, \verb|sectorName| will be replaced with every sector name (i.e. Services, Technology, Basic Materials etc).
 \newpage
 
 \begin{thebibliography}{10}

@@ -1,0 +1,286 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>optimizeSelect</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-12-05"><meta name="DC.source" content="optimizeSelect.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> [ Wp, P, sharpe ] = optimizeSelect( Ret, CoRisk, rfr, portlim )
+<span class="comment">%optimizeSelect builds the most optimal portfolio, given a limit, a</span>
+<span class="comment">%risk-free-rate, and the Covariance matrix and vector mean.</span>
+<span class="comment">%   [Inputs/Outputs]</span>
+<span class="comment">%   `Ret`       a `vector` of the means of a given market</span>
+<span class="comment">%   `CoRisk`    the Covariance `matrix` of a given market</span>
+<span class="comment">%   `rfr`       a `double` containing the risk free rate</span>
+<span class="comment">%   `portlim`   a `double` containing the limit for this portfolio</span>
+<span class="comment">%   `Wp`        a `vector` contating the final selected weights</span>
+<span class="comment">%   `P`         a `vector` containing the final selected indexes of the given assests</span>
+<span class="comment">%   `sharpe`   a `double` containing the sharpe ratio</span>
+<span class="comment">%</span>
+
+<span class="comment">% Initialize algorothimn</span>
+[~,P]   = min(diag(CoRisk));
+Wp      = [1];
+sharpe  = 0;
+
+<span class="comment">% Helpers</span>
+
+<span class="comment">% function addPort, will add assets to the portfolio,</span>
+<span class="comment">% untill a limit is reached</span>
+<span class="keyword">function</span> addPort()
+    <span class="comment">%Begin by generating a loop equalling the total number of empty "spots"</span>
+    <span class="keyword">for</span> repNum = 1:portlim-length(P)
+        <span class="comment">% Generated a list of Unselected assets</span>
+        Unsel = setdiff(1:length(Ret),P);
+
+        <span class="comment">% Set local variables</span>
+        fSha  = 0;
+        fID   = [];
+        fW    = Wp;
+
+        <span class="comment">% For every unselected asset</span>
+        c = 0;
+        <span class="keyword">for</span> assID = Unsel
+            c = c+1;
+            <span class="comment">% Get the Expected Returns</span>
+            M = Ret([P assID]);
+            <span class="comment">% Get Covariance Matrix and count the current number of assets</span>
+            S = CoRisk([P assID],[P assID]);
+            <span class="comment">% Computing Sharpe</span>
+            [ s, w ] = optimizeSupreme( M, S, rfr );
+            <span class="comment">% Determine if Portfolio is optimal</span>
+            <span class="keyword">if</span> (~isempty(w) &amp;&amp; s(end) &gt; fSha)
+                fID     = assID;
+                fSha    = s(end);
+                fW      = w;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        <span class="comment">% save results</span>
+        P       = [P fID];
+        Wp      = fW;
+        sharpe  = fSha;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% fucntion redPort will generate all potential portfolios containing one</span>
+<span class="comment">% less asset, and then select the one with the highest sharpe.</span>
+<span class="keyword">function</span> redPort()
+    <span class="comment">% Initialize local variables</span>
+    fSha    = 0;
+    fIDs    = P;
+    fW      = Wp;
+    <span class="comment">% run loop on every selected index</span>
+    <span class="keyword">for</span> portID = P
+        <span class="comment">% Get a reduced list ( a list without the currently selected asset)</span>
+        redList = setdiff(P,portID);
+        <span class="comment">% check in case empty</span>
+        <span class="keyword">if</span>(~isempty(redList))
+            <span class="comment">% Get variables</span>
+            M   = Ret(redList);
+            S   = CoRisk(redList,redList);
+
+            <span class="comment">% Computing Sharpe</span>
+            [ s, w ] = optimizeSupreme( M, S, rfr );
+
+            <span class="comment">% Determine if Portfolio is optimal</span>
+            <span class="keyword">if</span> (~isempty(w) &amp;&amp; s(end) &gt; fSha)
+                fSha    = s(end);
+                fIDs    = redList;
+                fW      = w;
+                sharpes = [s; fSha];
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    <span class="comment">% Set the selected Portfolio as our current</span>
+    P       = fIDs;
+    Wp      = fW;
+    sharpe  = fSha;
+<span class="keyword">end</span>
+
+<span class="comment">% Run initial addition</span>
+addPort();
+
+<span class="comment">% initialize watchers</span>
+lSharpe = 0;
+<span class="comment">% run loop until a divergence occurs</span>
+<span class="keyword">while</span> abs(lSharpe-sharpe) &gt; 1E-10
+    lSharpe = sharpe;
+    redPort();
+    addPort();
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Error using optimizeSelect (line 15)
+Not enough input arguments.
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [ Wp, P, sharpe ] = optimizeSelect( Ret, CoRisk, rfr, portlim )
+%optimizeSelect builds the most optimal portfolio, given a limit, a
+%risk-free-rate, and the Covariance matrix and vector mean.
+%   [Inputs/Outputs]
+%   `Ret`       a `vector` of the means of a given market
+%   `CoRisk`    the Covariance `matrix` of a given market
+%   `rfr`       a `double` containing the risk free rate
+%   `portlim`   a `double` containing the limit for this portfolio
+%   `Wp`        a `vector` contating the final selected weights
+%   `P`         a `vector` containing the final selected indexes of the given assests
+%   `sharpe`   a `double` containing the sharpe ratio
+%
+
+% Initialize algorothimn
+[~,P]   = min(diag(CoRisk));
+Wp      = [1];
+sharpe  = 0;
+
+% Helpers
+
+% function addPort, will add assets to the portfolio,
+% untill a limit is reached
+function addPort()
+    %Begin by generating a loop equalling the total number of empty "spots"
+    for repNum = 1:portlim-length(P)
+        % Generated a list of Unselected assets
+        Unsel = setdiff(1:length(Ret),P);
+
+        % Set local variables
+        fSha  = 0;
+        fID   = [];
+        fW    = Wp;
+        
+        % For every unselected asset
+        c = 0;
+        for assID = Unsel
+            c = c+1;
+            % Get the Expected Returns
+            M = Ret([P assID]);
+            % Get Covariance Matrix and count the current number of assets
+            S = CoRisk([P assID],[P assID]);
+            % Computing Sharpe
+            [ s, w ] = optimizeSupreme( M, S, rfr );
+            % Determine if Portfolio is optimal
+            if (~isempty(w) && s(end) > fSha)
+                fID     = assID;
+                fSha    = s(end);
+                fW      = w;
+            end
+        end
+        % save results
+        P       = [P fID];
+        Wp      = fW;
+        sharpe  = fSha;
+    end
+end
+
+% fucntion redPort will generate all potential portfolios containing one
+% less asset, and then select the one with the highest sharpe.
+function redPort()
+    % Initialize local variables
+    fSha    = 0;
+    fIDs    = P;
+    fW      = Wp;
+    % run loop on every selected index
+    for portID = P
+        % Get a reduced list ( a list without the currently selected asset)
+        redList = setdiff(P,portID);
+        % check in case empty
+        if(~isempty(redList))
+            % Get variables
+            M   = Ret(redList);
+            S   = CoRisk(redList,redList);
+            
+            % Computing Sharpe
+            [ s, w ] = optimizeSupreme( M, S, rfr );
+            
+            % Determine if Portfolio is optimal
+            if (~isempty(w) && s(end) > fSha)
+                fSha    = s(end);
+                fIDs    = redList;
+                fW      = w;
+                sharpes = [s; fSha];
+            end
+        end
+    end
+    % Set the selected Portfolio as our current
+    P       = fIDs;
+    Wp      = fW;
+    sharpe  = fSha;
+end
+
+% Run initial addition
+addPort();
+
+% initialize watchers
+lSharpe = 0;
+% run loop until a divergence occurs
+while abs(lSharpe-sharpe) > 1E-10
+    lSharpe = sharpe;
+    redPort();
+    addPort();
+end
+
+end
+
+
+##### SOURCE END #####
+--></body></html>
