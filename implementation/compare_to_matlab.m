@@ -2,20 +2,23 @@
 clear
 clc
 
-cd('F:/Mean-Value-Opt/');
-% Add Functions
-addpath('analysis');
-addpath('implementation');
+HomeDir = 'F:/Mean-Value-Opt/';%<<<<-----Put your home directory
+cd(HomeDir);
 
-[folders, dates, sectors] = dataLoc_retma( 'F:/Mean-Value-Opt/' );
+% Load all "background" data
+[folders, dates, sectors] = dataLoc_retma(HomeDir);
 
 % Inputs
-RFR = [0.0365    0.0117    0.0143    0.0169    0.0100 ];
+RFR = [0.0365    0.0117    0.0143    0.0169    0.0100 ];%Bond Rates from Stats Canada
 
 
 %% % (2) Select Data
-[ Ret, CoRisk, stockNames, selData, data  ] = data_selector( folders, dates(1), sectors(6) );
-
+date   = dates(ceil(rand()*length(dates)));% select a random date
+sector = sectors(ceil(rand()*length(sectors)));% select a random sector
+[ Ret, CoRisk, stockNames, selData, data  ] = data_selector( folders, date, sector );
+clc
+fprintf('Loading %s Sector, from date %s-%s\n',...
+    sector{:},date{:},num2str(str2num(date{:})+1));
 %% (3.0) Test #0 Quadprog vs Pure Lagrange
 clear mp n S M w WW
 clc
@@ -67,14 +70,22 @@ toc
 disp(WMp./Wp);
 
 %%
+% Plots
 figure('Name','Our Optimization');
-plot(Wp'*selData(:,1:n)')
-figure('Name','Matlab Optimization');
-plot(WMp'*selData(:,1:n)')
+    plot(Wp'*selData(:,1:n)');
+    title('Our Function');
+    xlabel('Time');
+    ylabel('Value of Portfolio');
+figure('Name','Matlab Optimization'); 
+    plot(WMp'*selData(:,1:n)');
+    xlabel('Time');
+    ylabel('Value of Portfolio');
+    title('Matlab');
 
-%% (3.2) 
+%% (3.2) Compute Optimal Portfolio
 clc
-PortfolioLimit = 10;
+n               = 20;
+PortfolioLimit  = 10;
 tic
     [ WpL, P, cSharpe ] = optimizeSelect( Ret(1:n), CoRisk(1:n,1:n), RFR(1), PortfolioLimit );
 toc

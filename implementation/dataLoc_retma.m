@@ -1,6 +1,10 @@
 function [ folders, dates, sectors ] = dataLoc_retma( wd )
-%UNTITLED9 Summary of this function goes here
-%   Detailed explanation goes here
+%dataLoc_retma working directory and general data setter
+%   [Inputs/Outputs]
+%   wd      a `string` with the working directory location
+%   folders a `str` with all the needed folders
+%   dates   a `cell` with all the avaible dates
+%   sectors a `cell` with all the avaible sectors
 
 % Read data source
 folders.working = wd;
