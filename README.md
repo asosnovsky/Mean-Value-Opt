@@ -1,6 +1,3 @@
-# Mean-Value-Optimzation
+# Mean-Value-Optimization Using Sharpe and a custom selection process
 
-A simple implamentation of mean-variance optimization for stock data.
-Data is extracted and cleaned through R, and then is analyzed using Matlab version R2015a.
-
-##### Please note that the `data_mining/time_series` and `data_mining/filtered_stocks` folders need to be **created** by running `data_minig/downloader.R`
+This is a Report about the testing of the Mean-Variance-Optimization model and the Sharpe ratio, on historical data for `2008-2012` stock data. Data is extracted and cleaned through R, and then is analyzed using Matlab version R2015a. A final report can then be seen
