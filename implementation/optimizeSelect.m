@@ -1,17 +1,32 @@
-function [ Wp, P, cSharpe ] = optimizeSelect( Ret, CoRisk, rfr, portlim )
-%optimizeSelect Summary of this function goes here
-%   Detailed explanation goes here
+function [ Wp, P, sharpe ] = optimizeSelect( Ret, CoRisk, rfr, portlim )
+%optimizeSelect builds the most optimal portfolio, given a limit, a
+%risk-free-rate, and the Covariance matrix and vector mean.
+%   [Inputs/Outputs]
+%   `Ret`       a `vector` of the means of a given market
+%   `CoRisk`    the Covariance `matrix` of a given market
+%   `rfr`       a `double` containing the risk free rate
+%   `portlim`   a `double` containing the limit for this portfolio
+%   `Wp`        a `vector` contating the final selected weights
+%   `P`         a `vector` containing the final selected indexes of the given assests
+%   `sharpe`   a `double` containing the sharpe ratio
+%
 
+% Initialize algorothimn
 [~,P]   = min(diag(CoRisk));
 Wp      = [1];
 sharpe  = 0;
 
+% Helpers
+
+% function addPort, will add assets to the portfolio,
+% untill a limit is reached
 function addPort()
+    %Begin by generating a loop equalling the total number of empty "spots"
     for repNum = 1:portlim-length(P)
-        % 'Unselected' List
+        % Generated a list of Unselected assets
         Unsel = setdiff(1:length(Ret),P);
 
-        % Set Helpers
+        % Set local variables
         fSha  = 0;
         fID   = [];
         fW    = Wp;
@@ -33,18 +48,25 @@ function addPort()
                 fW      = w;
             end
         end
+        % save results
         P       = [P fID];
         Wp      = fW;
         sharpe  = fSha;
     end
 end
+
+% fucntion redPort will generate all potential portfolios containing one
+% less asset, and then select the one with the highest sharpe.
 function redPort()
+    % Initialize local variables
     fSha    = 0;
     fIDs    = P;
     fW      = Wp;
+    % run loop on every selected index
     for portID = P
-        % Get the reduced list
+        % Get a reduced list ( a list without the currently selected asset)
         redList = setdiff(P,portID);
+        % check in case empty
         if(~isempty(redList))
             % Get variables
             M   = Ret(redList);
@@ -62,21 +84,22 @@ function redPort()
             end
         end
     end
-    % Set a new Portfolio as our current
+    % Set the selected Portfolio as our current
     P       = fIDs;
     Wp      = fW;
     sharpe  = fSha;
 end
 
+% Run initial addition
 addPort();
-lSharpe = sharpe;
-cSharpe = 0;
-while abs(lSharpe-cSharpe) > 1E-10
+
+% initialize watchers
+lSharpe = 0;
+% run loop until a divergence occurs
+while abs(lSharpe-sharpe) > 1E-10
     lSharpe = sharpe;
     redPort();
     addPort();
-    cSharpe = sharpe;
-    %disp(cSharpe);
 end
 
 end

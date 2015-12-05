@@ -10,9 +10,6 @@ function [ folders, dates, sectors ] = dataLoc_retma( wd )
 folders.working = wd;
 folders.data = strcat(folders.working,'data_mining/filtered_stocks/');
 
-% Set working directory
-cd(folders.working);
-
 % Get date list
 tmp = ls(folders.data);
 for i=3:size(tmp,1)

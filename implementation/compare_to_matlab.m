@@ -3,7 +3,7 @@ clear
 clc
 
 HomeDir = 'F:/Mean-Value-Opt/';%<<<<-----Put your home directory
-cd(HomeDir);
+cd(strcat(HomeDir,'implementation'));
 
 % Load all "background" data
 [folders, dates, sectors] = dataLoc_retma(HomeDir);
@@ -87,7 +87,7 @@ clc
 n               = 20;
 PortfolioLimit  = 10;
 tic
-    [ WpL, P, cSharpe ] = optimizeSelect( Ret(1:n), CoRisk(1:n,1:n), RFR(1), PortfolioLimit );
+    [ WpL, P, sharpe ] = optimizeSelect( Ret(1:n), CoRisk(1:n,1:n), RFR(1), PortfolioLimit )
 toc
 figure('Name',sprintf('Optimal %d Asset Portfolio', PortfolioLimit));
 plot(WpL'*selData(:,P)');
