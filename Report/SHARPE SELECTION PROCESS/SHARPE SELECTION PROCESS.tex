@@ -208,7 +208,7 @@
 			The number of variables is always equal to the number of asset $n$ + 2 (2 for the additional Lagrange multipliers we introduced). Therefore, (4) consists of $n+2$ linear equations in $n+2$ unknowns ($\mathbf{w}, \lambda_1, \lambda_2$). We can represent the system of linear equations using matrix algebra as: 
 			\begin{equation*}
 				\begin{pmatrix} 
-					2\mathbf{\Sigma} & \pmb{\mu} & \mathbf{1} \\ \mathbf{\mu^T} & 0 & 0 \\ 1^T & 0 & 0 
+					2\mathbf{\Sigma} & \pmb{\mu} & \mathbf{1} \\ \pmb{\mu^T} & 0 & 0 \\ \pmb{1^T} & 0 & 0 
 				\end{pmatrix} 
 				\begin{pmatrix}
 					\mathbf{w} \\ \lambda_1 \\ \lambda_2
@@ -226,8 +226,8 @@
 			\begin{equation*}
 				\mathbf{M} = \begin{pmatrix} 
 					2\mathbf{\Sigma} & \pmb{\mu} & \mathbf{1} \\ 
-					\mathbf{\mu^T} & 0 & 0 \\ 
-					1^T & 0 & 0 
+					\pmb{\mu^T} & 0 & 0 \\ 
+					\pmb{1^T} & 0 & 0 
 				\end{pmatrix}, 
 				\mathbf{y_w}=\begin{pmatrix}
 					\mathbf{w} \\ \lambda_1 \\ \lambda_2
@@ -246,11 +246,11 @@
 			This minimization problem is the basis of the Markowitz asset allocation strategies. However, we would also like to look into the Sharpe ratio for this problem. \\
 
 	\subsection{Maximization of Sharpe Ratio}
-		Recall the definition of the Sharpe ratio: $Sharpe$ = $\frac{(\mu_p - X_f)}{\sqrt{\sigma_p^2}}$. Therefore, we can also look at the portfolio asset allocation problem as maximization of the Sharpe ratio: 
+		Recall the definition of the Sharpe ratio: $Sharpe$ = $\frac{(\mu_p - r_f)}{\sqrt{\sigma_p^2}}$. Therefore, we can also look at the portfolio asset allocation problem as maximization of the Sharpe ratio: 
 		\begin{equation}
 			\begin{aligned}
 				& \underset{w}{\text{maximize}}
-				& & Sharpe = \frac{(\mu_p - X_f)}{\sqrt{\mathbf{w^T\Sigma w}}} \\
+				& & Sharpe = \frac{(\mu_p - r_f)}{\sqrt{\mathbf{w^T\Sigma w}}} \\
 				& \text{subject to}
 				& & \mathbf{w^T}\pmb{\mu} = \mu_p \\
 				&&& \mathbf{w^T1}=1
@@ -295,9 +295,9 @@
 
 				\draw [arrow] (input) -- (build);
 				\draw [arrow] (build) -- (select1);
-				\draw [arrow] (select1) -- ++(6.6,0)(greater);
-				\draw [arrow] (greater) -- node[anchor=east] {no} (end);
-				\draw [arrow] (greater) -- node[anchor=south] {yes} (build);
+				\draw [arrow] (select1) -- ++(6.0,0)(greater);
+				\draw [arrow] (greater) -- node[anchor=east] {yes} (end);
+				\draw [arrow] (greater) -- node[anchor=south] {no} (build);
 			\end{tikzpicture}
 		\end{center}
 		Once this stage is done, we begin to deduct assets from our list of stocks. We do this, since now that we added a number of assets we wish to check if there is a better alternative. This step is very simple, and simply requires producing a portfolio with one less asset, given every asset in the current list. This is known as the \textbf{Reduction Method}. 
@@ -540,7 +540,7 @@
 			\end{itemize}
 
 	\subsection{Concluding Remarks}
-		\ \ \ Generally, the returns of the created portfolios were slowly increasing but still proved to be a worse investment then a "safe" portfolio based on the risk free rate. One of the main reasons for poor performance lies in the inherent strategy of mean variance portfolio theory. The theorem requires the assumption of constant mean, variance and assumes that the past will predict the future perfectly. While,theoretically constant more frequent optimization (i.e. partition the data into months or weeks, rather than years) should lead to better performance, as it will force the algorithm to change the mean and variance. This sort of solution will only solve part of the problem inherit to MVP. Ideally, the program would require \textit{second-by-second} optimization to ensure best performance. In real world applications, transaction costs, supply/demand and capital accumulation severely decrease any benefit from implementing the strategy.  In conclusion, despite modern portfolio theory's reputation as an important advance in mathematical finance, our project has proven that is a poor model for investment strategies, if used without any other supplementary method.
+		\ \ \ Generally, the returns of the created portfolios were slowly increasing but still proved to be a worse investment then a ``safe" portfolio based on the risk free rate. One of the main reasons for poor performance lies in the inherent strategy of mean variance portfolio theory. The theorem requires the assumption of constant mean, variance and assumes that the past will predict the future perfectly. While,theoretically constant more frequent optimization (i.e. partition the data into months or weeks, rather than years) should lead to better performance, as it will force the algorithm to change the mean and variance. This sort of solution will only solve part of the problem inherit to MVP. Ideally, the program would require \textit{second-by-second} optimization to ensure best performance. In real world applications, transaction costs, supply/demand and capital accumulation severely decrease any benefit from implementing the strategy.  In conclusion, despite modern portfolio theory's reputation as an important advance in mathematical finance, our project has proven that is a poor model for investment strategies, if used without any other supplementary method.
 \newpage
 
 \section{Appendices}
