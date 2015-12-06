@@ -44,10 +44,10 @@
   <internal package="biblatex" priority="9" active="0">
     <generic>latex</generic>
     <provides type="dynamic">
-      <file>SHARPE*SELECTION*PROCESS.bcf</file>
+      <file>"SHARPE SELECTION PROCESS".bcf</file>
     </provides>
     <requires type="dynamic">
-      <file>SHARPE*SELECTION*PROCESS.bbl</file>
+      <file>"SHARPE SELECTION PROCESS".bbl</file>
     </requires>
     <requires type="static">
       <file>blx-dm.def</file>
@@ -64,19 +64,19 @@
     <generic>biber</generic>
     <cmdline>
       <binary>biber</binary>
-      <infile>SHARPE*SELECTION*PROCESS</infile>
+      <infile>"SHARPE SELECTION PROCESS"</infile>
     </cmdline>
     <input>
-      <file>SHARPE*SELECTION*PROCESS.bcf</file>
+      <file>"SHARPE SELECTION PROCESS".bcf</file>
     </input>
     <output>
-      <file>SHARPE*SELECTION*PROCESS.bbl</file>
+      <file>"SHARPE SELECTION PROCESS".bbl</file>
     </output>
     <provides type="dynamic">
-      <file>SHARPE*SELECTION*PROCESS.bbl</file>
+      <file>"SHARPE SELECTION PROCESS".bbl</file>
     </provides>
     <requires type="dynamic">
-      <file>SHARPE*SELECTION*PROCESS.bcf</file>
+      <file>"SHARPE SELECTION PROCESS".bcf</file>
     </requires>
   </external>
 </requests>

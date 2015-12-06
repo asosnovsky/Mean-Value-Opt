@@ -13,6 +13,13 @@
 	\usepackage{ifxetex,ifluatex}
 	\usepackage{fixltx2e} % provides \textsubscript
 	\usepackage{forest}
+	\usepackage{listings}
+	\lstset
+	{
+		basicstyle=\small\ttfamily,
+		columns=flexible,
+		breaklines=true
+	}
 % Custom Colors
 	\definecolor{tabblue}{RGB}{31,119,180}
 	\definecolor{tabor}{RGB}{255,127,14}
@@ -40,6 +47,7 @@
 \newpage
 \tableofcontents
 \newpage
+\newpage
 
 \section{Summary}
 	\subsection{What Does Our Program Do?}
@@ -62,6 +70,7 @@
 		\ \ \  The Sharpe Ratio, developed in 1966 by William F. Sharpe, is a method of relating the portfolio return relatively to its risk. It is defined as: $Sharpe$ = $\frac{\mu_p - r_f}{\sqrt{\sigma_p^2}}$, where $r_f$ is the risk free interest rate given by the market or a government.  This is a measure for calculating risk-adjusted return, that is, the expected return earned in excess of the risk free rate per unit of standard deviation. In other words, for the amount of risk we are taking, how much expected return are we getting out of it. But one of the problems with the Sharpe Ratio is that it treats all volatility the same, and this can result in penalizing upside volatility (potential of very high returns).\\
 
 \newpage
+
 \section{Methodology}
 	\subsection{Overview}
 		The way we constructed our algorithm can be summarized in the following flow chart:
@@ -94,17 +103,17 @@
 				\item Years 2008-2012
 				\begin{itemize}
 					\item the stock data has daily open and closing prices from Jan 2008 to Dec 2012
-					\item the time period was chosen to avoid any large financial movements in the market (ex. the 2008 financial crisis and the 2007-past bubble before)
+					\item the time period was chosen to encapsulate any large financial movements in the market (ex. the 2008 financial crisis and the 2007-past bubble before)
 				\end{itemize}
 					\item Stock by Sector
 				\begin{itemize}
 					\item stocks were organized by the following sectors: Basic Materials, Conglomerates, Consumer Goods, Financial, Health-care, Industrial Goods, Services, Technology, and Utilities
-					\item this was done since the MVP algorithm would create a portfolio from each sector and then create a portfolio from those portfolios
+					\item cut down computational cost of algorithm
 				\end{itemize}
 			\end{enumerate}
 
 		\subsubsection{Mining Algorithm}
-			All the data was collected via a web-scraping algorithm programmed with R. The central idea of the program is to determine the URLs associated with each Yahoo Finance sector page with those the program can identify the stock symbol by inspecting the HTML content. See stocklist.R in the appendix.\\
+			All the data was collected via a web-scraping algorithm programmed with R. The central idea of the program is to determine the URLs associated with each Yahoo Finance sector page with those the program can identify the stock symbol by inspecting the HTML content. See Appendix \ref{web scrapping}.\\
 
 			After a list of stock symbols were created, the program then uses the function \textit{getYahooData} from TTR: (Technical Trading Rules) package in R to collect the historical prices. This process yields in total approximately 25,000 stocks. 
 		
@@ -320,9 +329,9 @@
 	\begin{par}
 		We start by taking a random portion of data within our dataset, as follows:
 	\end{par}
-	\begin{verbatim}
+	\begin{lstlisting}
 		[Ret,CoRisk,stockNames,selData,data]=data_selector(folders,dates(1),sectors(6));
-	\end{verbatim}
+	\end{lstlisting}
 	\begin{par}
 		Note that \texttt{sectors(6)} is arbitrary sector name chosen from our sectors list, and \texttt{dates(1)}, is simply the data from \texttt{2008-2009}. This function will take the data from the folder, filter it, and then store it in the \texttt{selData} variable. Then it will compute the returns, and covariance and store them in the \texttt{Ret} and \texttt{CoRisk} variables respectively. The variable \texttt{data} is simply the unfiltered dataset.
 	\end{par} \vspace{1em}
@@ -335,15 +344,15 @@
 	\begin{par}
 		Building on the mathematical theory we take the covariance matrix and the returns matrix and construct the following matrices: Note that to ensure that the program does not run for too long, we control the number of assets we wish to test. If we wanted to test \textbf{all} of the assets we would set \texttt{n = length(Ret)}.
 	\end{par} \vspace{1em}
-	\begin{verbatim}n   = 100;
+	\begin{lstlisting}n   = 100;
 		M   = Ret(1:n);
 		S   = 2.*CoRisk(1:n,1:n);
 		mp  = 0.05;
-	\end{verbatim}
-	\begin{verbatim}
+	\end{lstlisting}
+	\begin{lstlisting}
 		A = [ S M' ones(n,1); M 0 0 ; ones(1,n) 0 0 ];
 		x = [ zeros(n,1); mp; 1 ];
-	\end{verbatim}
+	\end{lstlisting}
 	\begin{par}
 		Hence, we can obtain the solution for our weights as follows: \texttt{Weights = A\ensuremath{\backslash}x};
 	\end{par} \vspace{1em}
@@ -353,7 +362,7 @@
 	\begin{par}
 		Next we will see how our function compares to the matlab base function \texttt{quadprog}. This will serve us as a benchmark for our function. The following code will compare the matlab function to ours.
 	\end{par} \vspace{1em}
-	\begin{verbatim}
+	\begin{lstlisting}
 		mp  = 0.05;
 		n   = length(Ret);
 		S   = CoRisk(1:n,1:n);
@@ -376,9 +385,9 @@
 
 		% Comparison
 		square_root_sum_of_error_squared = sqrt(sum((WW(1:end-2)-w).^2)./n)
-	\end{verbatim}
+	\end{lstlisting}
 
-    \color{lightgray} \begin{verbatim}
+    \color{lightgray} \begin{lstlisting}
 		Matlab Time:  Elapsed time is 0.009409 seconds.
 
 		Us Time:  Elapsed time is 0.000961 seconds.
@@ -387,7 +396,7 @@
 
 		   1.2973e-13
 
-	\end{verbatim} \color{black}
+	\end{lstlisting} \color{black}
     \begin{par}
 		As you can see, our function outperformed the matlab function in terms of time. This is due to the fact that the matlab function runs several tests on the matrices before actually computing the weights.
 	\end{par} \vspace{1em}
@@ -401,7 +410,7 @@
 	\begin{par}
 	We run our comparison code as follows:
 	\end{par} \vspace{1em}
-	\begin{verbatim}
+	\begin{lstlisting}
 	clear n M S rfr WMp mLims
 	clc
 	n       = 10;
@@ -425,9 +434,9 @@
 	    Our_Sharpe = (M*Wp-rfr)/sqrt(Wp'*S*Wp)
 	    fprintf('\nUs Time:  ');
 	toc
-	\end{verbatim}
+	\end{lstlisting}
 
-    \color{lightgray} \begin{verbatim}
+    \color{lightgray} \begin{lstlisting}
 		Matlab_Sharpe =
 
     		0.0963
@@ -439,14 +448,14 @@
 		    0.0490
 
 		Us Time:  Elapsed time is 0.010628 seconds.
-	\end{verbatim} \color{black}
+	\end{lstlisting} \color{black}
     \begin{par}
 		As you can see, our function outperformed the matlab function by a great deal. As a matter of fact, it performs significantly better with higher values of \texttt{n}. However, our Sharpe value seems to be at first glance much lower than matlab. This is because we found a \textit{parallel} portfolio to the one of matlab. To show what we mean by that, one may simply observe the ratio between the matlab weights and our weights:
 	\end{par} \vspace{1em}
-	\begin{verbatim}
+	\begin{lstlisting}
 		disp(WMp./Wp);
-	\end{verbatim}
-        \color{lightgray} \begin{verbatim}   1.0e+08 *
+	\end{lstlisting}
+        \color{lightgray} \begin{lstlisting}   1.0e+08 *
 		    5.3632
 		    5.1647
 		    5.0474
@@ -458,11 +467,11 @@
 		    5.3251
 		    4.9616
 
-	\end{verbatim} \color{black}
+	\end{lstlisting} \color{black}
     \begin{par}
 		Or may look at the plot of the optimization period:
 	\end{par} \vspace{1em}
-	\begin{verbatim}
+	\begin{lstlisting}
 		figure('Name','Our Optimization');
 		plot(Wp'*selData(:,1:n)')
 		title('Our Function');
@@ -473,22 +482,22 @@
 		title('Matlab');
 		xlabel('Time');
 		ylabel('Value of Portfolio');
-	\end{verbatim}
+	\end{lstlisting}
 	\includegraphics [width=3.5in]{testing_01.png}\includegraphics [width=3.5in]{testing_02.png}
 	\begin{par}
 		As you can see the only difference between our method and the matlab method is a constant multiplier. In this case the multiplier can be computed as approximately:
 	\end{par} \vspace{1em}
-	\begin{verbatim}
+	\begin{lstlisting}
 		approximate_multiplier = mean(WMp./Wp)
 		WWW = approximate_multiplier.*Wp;
 		Our_Adjusted_Sharpe = (M*WWW-rfr)/sqrt(WWW'*S*WWW)
-	\end{verbatim}
-    \color{lightgray} \begin{verbatim}
+	\end{lstlisting}
+    \color{lightgray} \begin{lstlisting}
 		approximate_multiplier =
 		   5.2261e+08
 		Our_Adjusted_Sharpe =
 		    0.0929
-	\end{verbatim} \color{black}
+	\end{lstlisting} \color{black}
     \begin{par}
 		Hence, our method compares well with matlab. As it provides us with a good-enough estimate for the Sharpe of the portfolio.
 	\end{par} \vspace{1em}
@@ -537,9 +546,9 @@
 	\subsection{Data Retrieval}
 	|R Code|, for the purpose of this section, we decided to use \verb|R| in order to pull data from \verb|yahoo-finance|, as it was a more convenient tool for data cleaning and web-scrapping.\\
 	\\
-		\subsubsection{Web scrapping}
+		\subsubsection{Web scrapping}\label{web scrapping}
 			First we had to scrap yahoo for its links and sector-titles.
-			\begin{verbatim}
+			\begin{lstlisting}
 				# Load packages and clean variables
 				rm(list = ls())
 				library(httr)
@@ -584,12 +593,12 @@
 				    
 				    }
 				  }
-			\end{verbatim}
+			\end{lstlisting}
 		\subsubsection{Filter}
 			Between this step and the last step, we downloaded all the data using a simple loop, and store it in a folder hierarchy, where they were divided by sector. We omitted that process as it was not relevant to the theory. \\
 			\\
 			In this section, we take the downloaded data, partition it, and then filter it, to ensure complete case per partition. Please note that this process took around 4hrs.
-			\begin{verbatim}
+			\begin{lstlisting}
 				rm(list=ls())
 				require(chron)
 				require(dplyr)
@@ -676,11 +685,11 @@
 				      write.csv(merged_data,file = merged_data_file,row.names = FALSE);
 				    }
 				}
-			\end{verbatim}
+			\end{lstlisting}
 
 	\subsection{Data Selector}
 		|Matlab Code|: This function is ran after the data has been scrapped from yahoo
-		\begin{verbatim}
+		\begin{lstlisting}
 			function [ Ret, CoRisk, fStocknames, filData, data, stockNames, P, returns  ] = ...
 			                data_selector( folders, date, sector )
 			%data_selector This function will select a given partition given a sector,
@@ -746,11 +755,11 @@
 			    CoRisk = CoRisk(P,P);
 			    fStocknames = stockNames(P);
 			end
-		\end{verbatim}
+		\end{lstlisting}
 
 	\subsection{Bisection Method for Sharpe}
 		|Matlab Code|: This function will run the bisection method, until a maximized Sharpe ratio will occur.
-		\begin{verbatim}
+		\begin{lstlisting}
 			function [ sharpe, Wp, sharpes, Wps ] = optimizeSupreme( M, S, rfr )
 			%optimizeSupreme finds the most optimal sharpe value using the bisection
 			%method.
@@ -820,11 +829,11 @@
 			    % store resultig sharpe
 			    sharpe = sharpes(end);
 			end
-		\end{verbatim}
+		\end{lstlisting}
 
 	\subsection{Selection Algorithm}
 		|Matlab Code|: This function will run the addition and reduction methods on a sector, until an optimal portfolio gets chosen, with a maximized sharpe return.
-		\begin{verbatim}
+		\begin{lstlisting}
 			function [ Wp, P, sharpe ] = optimizeSelect( Ret, CoRisk, rfr, portlim )
 			%optimizeSelect builds the most optimal portfolio, given a limit, a
 			%risk-free-rate, and the Covariance matrix and vector mean.
@@ -930,7 +939,7 @@
 			end
 
 			end
-		\end{verbatim}
+		\end{lstlisting}
 
 	\subsection{Final Analysis}
 		|Matlab Code|: This is the code that we ran, when we generated the plots in section (5.1). This code uses the previous \verb|matlab| functions to generate optimal weights, store the names of selected stocks and then generate the price of our portfolio in for every upcoming year.\\
@@ -943,7 +952,7 @@
 			\item \verb|findlocSubstrings|, is a function that will find all unique strings that are in one list, and will return their indexes. 
 		\end{enumerate}
 		Please note that this function took around 30min to run, and so we added a lot of |display| functions in different fields.
-		\begin{verbatim}
+		\begin{lstlisting}
 			% Inputs
 			RFR = [0.0365    0.0117    0.0143    0.0169    0.0100 ];
 			PortfolioLimit = 10;
@@ -982,7 +991,8 @@
 				       data.(char(strcat('y',date))).(char(strrep(sector,' ','_'))) = tmpData;
 			    end
 			end
-		\end{verbatim}
+		\end{lstlisting}
+		\newpage
 		This ultimately creates a \verb|structure| called \verb|data|. This structure will look as follows:
 		\begin{center}
 		\begin{forest}

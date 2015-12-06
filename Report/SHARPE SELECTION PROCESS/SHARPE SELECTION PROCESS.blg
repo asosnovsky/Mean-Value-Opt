@@ -1,0 +1,5 @@
+[0] Config.pm:324> INFO - This is Biber 2.1
+[1] Config.pm:327> INFO - Logfile is 'SHARPE SELECTION PROCESS.blg'
+[49] biber-darwin:276> INFO - === Sun Dec  6, 2015, 12:57:09
+[49] Biber.pm:333> INFO - Reading 'SHARPE SELECTION PROCESS.bcf'
+[165] Utils.pm:146> WARN - No data sources defined!
