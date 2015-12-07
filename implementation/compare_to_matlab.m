@@ -66,7 +66,7 @@ tic
     Our_Sharpe = (M*Wp-rfr)/sqrt(Wp'*S*Wp)
     fprintf('\nUs Time:  ');
 toc
-
+disp('Weight Ratio: (WMp/Wp)');
 disp(WMp./Wp);
 
 %%
